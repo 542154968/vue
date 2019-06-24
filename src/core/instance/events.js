@@ -10,9 +10,13 @@ import {
 import { updateListeners } from '../vdom/helpers/index'
 
 export function initEvents (vm: Component) {
+  // 创建一个纯净对象
   vm._events = Object.create(null)
+  // 暂不知道这个标识干嘛用的
   vm._hasHookEvent = false
   // init parent attached events
+  // 初始化父级附加事件
+  // $listeners 
   const listeners = vm.$options._parentListeners
   if (listeners) {
     updateComponentListeners(vm, listeners)
@@ -32,6 +36,7 @@ function remove (event, fn) {
 function createOnceHandler (event, fn) {
   const _target = target
   return function onceHandler () {
+    // 作用域清空
     const res = fn.apply(null, arguments)
     if (res !== null) {
       _target.$off(event, onceHandler)
@@ -45,6 +50,10 @@ export function updateComponentListeners (
   oldListeners: ?Object
 ) {
   target = vm
+  // add    $on
+  // remove $off
+  // createOnceHandler 一次触发 once？ 
+  // vdom/helpers/update-listeners
   updateListeners(listeners, oldListeners || {}, add, remove, createOnceHandler, vm)
   target = undefined
 }
