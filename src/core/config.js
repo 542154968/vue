@@ -59,6 +59,7 @@ export default ({
 
   /**
    * Whether to record perf
+   * 是否记录性能
    */
   performance: false,
 
