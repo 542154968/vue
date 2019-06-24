@@ -149,11 +149,14 @@ export function hasOwn (obj: Object | Array<*>, key: string): boolean {
 
 /**
  * Create a cached version of a pure function.
+ * 创建纯函数的缓存版本。
  */
-export function cached<F: Function> (fn: F): F {
+export function cached<F: Function>(fn: F): F {
+  // 纯净对象
   const cache = Object.create(null)
-  return (function cachedFn (str: string) {
-    const hit = cache[str]
+  return (function cachedFn(str: string) {
+    // 利用闭包内存泄露无法清除局部变量做缓存？？？ 也太骚了把 还能这样操作
+    const hit = cache[str] // {str: value}
     return hit || (cache[str] = fn(str))
   }: any)
 }
