@@ -64,13 +64,14 @@ export function initMixin(Vue: Class<Component>) {
     if (process.env.NODE_ENV !== 'production') {
       initProxy(vm)
     } else {
-      // 生产模式使用自己本身
+      // 生产模式_renderProxy使用自己本身
       vm._renderProxy = vm
     }
 
     // expose real self
     // 指向自己(vm)的变量
     vm._self = vm
+    // 初始化生命周期
     initLifecycle(vm)
     initEvents(vm)
     initRender(vm)
