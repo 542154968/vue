@@ -129,6 +129,7 @@ export function eventsMixin (Vue: Class<Component>) {
     const vm: Component = this
     if (process.env.NODE_ENV !== 'production') {
       const lowerCaseEvent = event.toLowerCase()
+      // 如果不是全小写 报异常
       if (lowerCaseEvent !== event && vm._events[lowerCaseEvent]) {
         tip(
           `Event "${lowerCaseEvent}" is emitted in component ` +
@@ -145,6 +146,7 @@ export function eventsMixin (Vue: Class<Component>) {
       const args = toArray(arguments, 1)
       const info = `event handler for "${event}"`
       for (let i = 0, l = cbs.length; i < l; i++) {
+        // 容错式执行 有错误抛出来
         invokeWithErrorHandling(cbs[i], vm, args, vm, info)
       }
     }
