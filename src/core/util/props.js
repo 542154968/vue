@@ -25,13 +25,16 @@ export function validateProp (
   vm?: Component
 ): any {
   const prop = propOptions[key]
+  // props是否写了这个key
   const absent = !hasOwn(propsData, key)
   let value = propsData[key]
+  // 检测单签props值的类型是否符合type
   // boolean casting
   const booleanIndex = getTypeIndex(Boolean, prop.type)
   if (booleanIndex > -1) {
     if (absent && !hasOwn(prop, 'default')) {
       value = false
+    // hyphenate 大写转驼峰 如果value是空或者value等于驼峰的key  
     } else if (value === '' || value === hyphenate(key)) {
       // only cast empty string / same name to boolean if
       // boolean has higher priority
@@ -42,6 +45,7 @@ export function validateProp (
     }
   }
   // check default value
+  // 如果value 没有传值 那么就获取默认值 所以尽量还是传值 减少一些计算 
   if (value === undefined) {
     value = getPropDefaultValue(vm, prop, key)
     // since the default value is a fresh copy,
@@ -178,6 +182,9 @@ function assertType (value: any, type: Function): {
  * Use function string name to check built-in types,
  * because a simple equality check will fail when running
  * across different vms / iframes.
+ *使用函数字符串名称检查内置类型，
+ *因为运行时简单的相等性检查将失败
+ *跨不同的vms/iframes。
  */
 function getType (fn) {
   const match = fn && fn.toString().match(/^\s*function (\w+)/)
