@@ -13,6 +13,7 @@ export function initProvide (vm: Component) {
   }
 }
 
+// 首先通过 resolveInject 方法获取 inject 选项搜索结果，如果有搜索结果，遍历搜索结果并为其中的数据添加 setter 和 getter。 
 export function initInjections (vm: Component) {
   const result = resolveInject(vm.$options.inject, vm)
   if (result) {
@@ -36,6 +37,17 @@ export function initInjections (vm: Component) {
   }
 }
 
+/**
+ * 
+ 获取 inject 选项的 key 数组，遍历 key 数组，通过向上冒泡来查找 provide 中是否有 key 与 inject
+  选项中 from 属性同名的，如果有，则将这个数据传递给 result；
+  如果没有，检查 inject 是否有 default 选项设定默认值或者默认方法，如果有则将默认值返传给 result，最终返回 result 对象。
+--------------------- 
+作者：violet-jack 
+来源：CSDN 
+原文：https://blog.csdn.net/violetjack0808/article/details/79354841 
+版权声明：本文为博主原创文章，转载请附上博文链接！
+ */
 export function resolveInject (inject: any, vm: Component): ?Object {
   if (inject) {
     // inject is :any because flow is not smart enough to figure out cached
@@ -47,6 +59,7 @@ export function resolveInject (inject: any, vm: Component): ?Object {
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i]
       // #6574 in case the inject object is observed...
+      // 有这个 说明已经被observe监听了
       if (key === '__ob__') continue
       const provideKey = inject[key].from
       let source = vm

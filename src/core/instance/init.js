@@ -78,6 +78,7 @@ export function initMixin(Vue: Class<Component>) {
     initEvents(vm)
     // 创建初始化渲染
     initRender(vm)
+    // 触发当前组件beforeCreate周期中写的函数 还有@hook:beforeCreate
     callHook(vm, 'beforeCreate')
     initInjections(vm) // resolve injections before data/props
     initState(vm)
