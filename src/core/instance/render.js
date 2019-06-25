@@ -17,11 +17,17 @@ import VNode, { createEmptyVNode } from '../vdom/vnode'
 import { isUpdatingChildComponent } from './lifecycle'
 
 export function initRender (vm: Component) {
+  // 子节点的根节点
   vm._vnode = null // the root of the child tree
+  // v-once的功能  缓存
   vm._staticTrees = null // v-once cached trees
+  // 当前节点的属性
   const options = vm.$options
+  // 父节点
   const parentVnode = vm.$vnode = options._parentVnode // the placeholder node in parent tree
+  // 作用域 
   const renderContext = parentVnode && parentVnode.context
+  // ./render-helps/resolve-slots 设置当前组件的插槽  是命名还是defaults中 还是忽略 根绝renderContext判断是否使用name 
   vm.$slots = resolveSlots(options._renderChildren, renderContext)
   vm.$scopedSlots = emptyObject
   // bind the createElement fn to this instance
