@@ -54,8 +54,10 @@ export function initState (vm: Component) {
   if (opts.props) initProps(vm, opts.props)
   // 初始化方法
   if (opts.methods) initMethods(vm, opts.methods)
+  // 作为根data
   if (opts.data) {
     initData(vm)
+    // 若果没传data  设置一个默认值
   } else {
     observe(vm._data = {}, true /* asRootData */)
   }
@@ -127,8 +129,10 @@ function initProps (vm: Component, propsOptions: Object) {
 function initData (vm: Component) {
   let data = vm.$options.data
   data = vm._data = typeof data === 'function'
+  // 让data的作用域在vm中
     ? getData(data, vm)
     : data || {}
+    // 如果data不是个对象 报错
   if (!isPlainObject(data)) {
     data = {}
     process.env.NODE_ENV !== 'production' && warn(
@@ -144,6 +148,7 @@ function initData (vm: Component) {
   let i = keys.length
   while (i--) {
     const key = keys[i]
+    // 先判断Methods的key和data的key可会重复 重复报错
     if (process.env.NODE_ENV !== 'production') {
       if (methods && hasOwn(methods, key)) {
         warn(
@@ -152,17 +157,19 @@ function initData (vm: Component) {
         )
       }
     }
+    // 再判断 props的key和data的key是否会重复
     if (props && hasOwn(props, key)) {
       process.env.NODE_ENV !== 'production' && warn(
         `The data property "${key}" is already declared as a prop. ` +
         `Use prop default value instead.`,
         vm
       )
+      // 如果key 不是_或者$开头的 设置个监听兰姐  this[scope][key] = value
     } else if (!isReserved(key)) {
       proxy(vm, `_data`, key)
     }
   }
-  // observe data
+  // observe data 为data设置观察者 
   observe(data, true /* asRootData */)
 }
 
@@ -170,6 +177,7 @@ export function getData (data: Function, vm: Component): any {
   // #7573 disable dep collection when invoking data getters
   pushTarget()
   try {
+    // 这里就是为啥data一定要用函数返回  让它在私有的空间不受别的影响
     return data.call(vm, vm)
   } catch (e) {
     handleError(e, vm, `data()`)
