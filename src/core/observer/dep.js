@@ -54,6 +54,7 @@ export default class Dep {
 // can be evaluated at a time.
 // 创建一个唯一的观察模型  这是一个调用栈 因为每个render函数都有一个watcher 那么这个顺序就需要管理
 // https://segmentfault.com/q/1010000010095427/a-1020000010103282 可以看这个回答
+// Vue Dep.target为什么需要targetStack来管理？
 Dep.target = null
 const targetStack = []
 

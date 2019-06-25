@@ -84,7 +84,9 @@ export function initMixin(Vue: Class<Component>) {
     initInjections(vm) // resolve injections before data/props
     // 初始化props{} Methods{} data(){return {}} computed watch $?(set|delete|watch)的实现
     initState(vm)
+    // 初始化 provide
     initProvide(vm) // resolve provide after data/props
+    // 变create周期里了 create周期里的函数进行执行
     callHook(vm, 'created')
 
     /* istanbul ignore if */
