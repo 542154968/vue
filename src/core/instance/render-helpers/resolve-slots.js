@@ -7,6 +7,7 @@ import type VNode from 'core/vdom/vnode'
  * 总的来讲 如果children存在 如果child的作用域和当前作用域相同 说明是有多个 将child推入对应名称的数组中 
  * 如果child不在统一作用域 就推入默认的slot中 还有如果child中含有template  就使用template中的children
  * 忽略空白插槽
+ * 
  */
 export function resolveSlots (
   children: ?Array<VNode>,
