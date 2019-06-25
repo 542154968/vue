@@ -90,12 +90,14 @@ export function initMixin(Vue: Class<Component>) {
     callHook(vm, 'created')
 
     /* istanbul ignore if */
+    // 开发环境 性能提醒  当前vue组件 已经初始化了
     if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
       vm._name = formatComponentName(vm, false)
       mark(endTag)
       measure(`vue ${vm._name} init`, startTag, endTag)
     }
-
+    // 若果dom存在  name使用$mount挂在到el上
+    // platforms/web/runtime/index -> core/instance/lifecycle -> fn: mountComponent
     if (vm.$options.el) {
       vm.$mount(vm.$options.el)
     }

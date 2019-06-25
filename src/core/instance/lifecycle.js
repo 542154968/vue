@@ -21,9 +21,13 @@ import {
 export let activeInstance: any = null
 export let isUpdatingChildComponent: boolean = false
 
+// 缓存下来前一个 然后执行的时候回到前一个
 export function setActiveInstance(vm: Component) {
+  // 前一个等于当前激活的
   const prevActiveInstance = activeInstance
+  // 当前激活的等于传进来的
   activeInstance = vm
+  // 执行之后 当前激活的等于上一个
   return () => {
     activeInstance = prevActiveInstance
   }
@@ -68,10 +72,12 @@ export function lifecycleMixin(Vue: Class<Component>) {
     const vm: Component = this
     const prevEl = vm.$el
     const prevVnode = vm._vnode
+    // 缓存下来前一个vue实例
     const restoreActiveInstance = setActiveInstance(vm)
     vm._vnode = vnode
     // Vue.prototype.__patch__ is injected in entry points
     // based on the rendering backend used.
+    // core/vdom/patch createPatchFunction
     if (!prevVnode) {
       // initial render
       vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */)
@@ -146,12 +152,14 @@ export function lifecycleMixin(Vue: Class<Component>) {
   }
 }
 
+// $mount调用的方法
 export function mountComponent(
   vm: Component,
   el: ?Element,
   hydrating?: boolean
 ): Component {
   vm.$el = el
+  // 如果没有render 报错 返回空的
   if (!vm.$options.render) {
     vm.$options.render = createEmptyVNode
     if (process.env.NODE_ENV !== 'production') {
@@ -175,10 +183,12 @@ export function mountComponent(
       }
     }
   }
+  // 来到了beforeMount周期~
   callHook(vm, 'beforeMount')
 
   let updateComponent
   /* istanbul ignore if */
+  // 开发环境展示这个周期的性能
   if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
     updateComponent = () => {
       const name = vm._name
