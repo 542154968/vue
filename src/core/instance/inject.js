@@ -7,6 +7,7 @@ import { defineReactive, toggleObserving } from '../observer/index'
 export function initProvide (vm: Component) {
   const provide = vm.$options.provide
   if (provide) {
+    // 如果是function  作用域绑定在当前vue实例 
     vm._provided = typeof provide === 'function'
       ? provide.call(vm)
       : provide
