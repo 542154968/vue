@@ -65,6 +65,7 @@ export function isRegExp (v: any): boolean {
 
 /**
  * Check if val is a valid array index.
+ * 判断是不是合法的index值
  */
 export function isValidArrayIndex (val: any): boolean {
   const n = parseFloat(String(val))

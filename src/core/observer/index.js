@@ -136,6 +136,7 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
 
 /**
  * Define a reactive property on an Object.
+ * 定义对象上的反应性属性
  */
 export function defineReactive (
   obj: Object,
@@ -204,20 +205,27 @@ export function defineReactive (
  * already exist.
  */
 export function set (target: Array<any> | Object, key: any, val: any): any {
+  // 如果set的target是空的 报错
   if (process.env.NODE_ENV !== 'production' &&
     (isUndef(target) || isPrimitive(target))
   ) {
     warn(`Cannot set reactive property on undefined, null, or primitive value: ${(target: any)}`)
   }
+  // 如果target是Array 并且index值是合法的
   if (Array.isArray(target) && isValidArrayIndex(key)) {
+    // 数组的长度重设 就是当添加一个或者多个的时候数组长度不够了
     target.length = Math.max(target.length, key)
+    // 然后让这个数组的[key]为val
     target.splice(key, 1, val)
     return val
   }
+  // 如果key是target自身的key不是继承来的
   if (key in target && !(key in Object.prototype)) {
     target[key] = val
     return val
   }
+
+  // 不允许向vue实例进行set
   const ob = (target: any).__ob__
   if (target._isVue || (ob && ob.vmCount)) {
     process.env.NODE_ENV !== 'production' && warn(
@@ -226,10 +234,13 @@ export function set (target: Array<any> | Object, key: any, val: any): any {
     )
     return val
   }
+
+  // 如果不是vue实例
   if (!ob) {
     target[key] = val
     return val
   }
+
   defineReactive(ob.value, key, val)
   ob.dep.notify()
   return val
@@ -239,15 +250,18 @@ export function set (target: Array<any> | Object, key: any, val: any): any {
  * Delete a property and trigger change if necessary.
  */
 export function del (target: Array<any> | Object, key: any) {
+  // 值不存在不删除
   if (process.env.NODE_ENV !== 'production' &&
     (isUndef(target) || isPrimitive(target))
   ) {
     warn(`Cannot delete reactive property on undefined, null, or primitive value: ${(target: any)}`)
   }
+  // 数组的话 直接删除
   if (Array.isArray(target) && isValidArrayIndex(key)) {
     target.splice(key, 1)
     return
   }
+  // vue的根值不能删除
   const ob = (target: any).__ob__
   if (target._isVue || (ob && ob.vmCount)) {
     process.env.NODE_ENV !== 'production' && warn(
@@ -256,9 +270,11 @@ export function del (target: Array<any> | Object, key: any) {
     )
     return
   }
+  // 不属于当前的target 不是继承来的 才能删除
   if (!hasOwn(target, key)) {
     return
   }
+  //  直接删除
   delete target[key]
   if (!ob) {
     return
