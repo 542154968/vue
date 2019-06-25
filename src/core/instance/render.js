@@ -29,11 +29,16 @@ export function initRender (vm: Component) {
   const renderContext = parentVnode && parentVnode.context
   // ./render-helps/resolve-slots 设置当前组件的插槽  是命名还是defaults中 还是忽略 根绝renderContext判断是否使用name 
   vm.$slots = resolveSlots(options._renderChildren, renderContext)
+  // 创建一个冻结对象  这个对象再也不能修改
   vm.$scopedSlots = emptyObject
   // bind the createElement fn to this instance
   // so that we get proper render context inside it.
   // args order: tag, data, children, normalizationType, alwaysNormalize
   // internal version is used by render functions compiled from templates
+  //将createElement fn绑定到此实例
+  //以便在其中获得适当的呈现上下文。
+  //参数顺序：tag、data、children、normalizationType、alwaysSnormalize
+  //内部版本由从模板编译的呈现函数使用
   vm._c = (a, b, c, d) => createElement(vm, a, b, c, d, false)
   // normalization is always applied for the public version, used in
   // user-written render functions.
@@ -44,6 +49,7 @@ export function initRender (vm: Component) {
   const parentData = parentVnode && parentVnode.data
 
   /* istanbul ignore else */
+  // 判断$attrs 和 ￥listeners是否变化了
   if (process.env.NODE_ENV !== 'production') {
     defineReactive(vm, '$attrs', parentData && parentData.attrs || emptyObject, () => {
       !isUpdatingChildComponent && warn(`$attrs is readonly.`, vm)

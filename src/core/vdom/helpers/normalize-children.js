@@ -15,6 +15,16 @@ import { isFalse, isTrue, isDef, isUndef, isPrimitive } from 'shared/util'
 // normalization is needed - if any child is an Array, we flatten the whole
 // thing with Array.prototype.concat. It is guaranteed to be only 1-level deep
 // because functional components already normalize their own children.
+// 1。当一个孩子组成的功能组件。
+
+// 5返回一数组而不是单个根。在这种的情况下，只是简单的
+
+// 标准化是必要的/孩子-如果有一平坦的整个阵列，我们
+
+// 与array.prototype.concat /用品。它是唯一的保证，是一层深
+
+// 功能部件/因为自己已经恢复正常的儿童。
+//  Array.prototype.concat.apply([], children) 可以铺平2层深度的数组
 export function simpleNormalizeChildren (children: any) {
   for (let i = 0; i < children.length; i++) {
     if (Array.isArray(children[i])) {
@@ -28,6 +38,13 @@ export function simpleNormalizeChildren (children: any) {
 // e.g. <template>, <slot>, v-for, or when the children is provided by user
 // with hand-written render functions / JSX. In such cases a full normalization
 // is needed to cater to all possible types of children values.
+// 2。当子级包含始终生成嵌套数组的构造时，
+
+//例如<template>、<slot>、v-for或当用户提供子级时
+
+//使用手写的呈现函数/jsx。在这种情况下，完全正常化
+
+//需要满足所有可能的子值类型。
 export function normalizeChildren (children: any): ?Array<VNode> {
   return isPrimitive(children)
     ? [createTextVNode(children)]

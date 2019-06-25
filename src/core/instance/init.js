@@ -71,10 +71,11 @@ export function initMixin(Vue: Class<Component>) {
     // expose real self
     // 指向自己(vm)的变量
     vm._self = vm
-    // 初始化生命周期
+    // 初始化生命周期 设置根节点然后初始化一些周期和watcher的默认值  周期在这时还没触发 所以都是false
     initLifecycle(vm)
     // 初始化 实例方法/事件  off  on emit once
     initEvents(vm)
+    // 创建初始化渲染
     initRender(vm)
     callHook(vm, 'beforeCreate')
     initInjections(vm) // resolve injections before data/props
