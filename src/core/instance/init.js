@@ -61,6 +61,7 @@ export function initMixin(Vue: Class<Component>) {
     /* istanbul ignore else */
     // 如果是开发环境 并且支持proxy的话 用proxy拦截一下 最后设置vm._renderPorxy 如果浏览器支持proxy 就是用proxy拦截 不支持就是用自己本身
     // 是否使用proxy包装对象的 只是为了方便报错之类的？？？卧槽 在这里只是用来在开发环境报错...
+    // 主要就是为Vue实例的_renderProxy属性赋值。不同的代码运行环境赋值的结果不同。
     if (process.env.NODE_ENV !== 'production') {
       initProxy(vm)
     } else {
