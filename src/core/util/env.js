@@ -35,11 +35,13 @@ if (inBrowser) {
 }
 
 // this needs to be lazy-evaled because vue may be required before
+// 这个需求需要延迟加载, 因为在 vue服务器渲染设置VUE_ENV环境之前, 需要先加载vue
 // vue-server-renderer can set VUE_ENV
 let _isServer
 export const isServerRendering = () => {
   if (_isServer === undefined) {
     /* istanbul ignore if */
+    // node  Webpack环境下
     if (!inBrowser && !inWeex && typeof global !== 'undefined') {
       // detect presence of vue-server-renderer and avoid
       // Webpack shimming the process

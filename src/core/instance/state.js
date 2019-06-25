@@ -61,6 +61,7 @@ export function initState (vm: Component) {
   } else {
     observe(vm._data = {}, true /* asRootData */)
   }
+  // computed计算属性
   if (opts.computed) initComputed(vm, opts.computed)
   if (opts.watch && opts.watch !== nativeWatch) {
     initWatch(vm, opts.watch)
@@ -189,24 +190,29 @@ export function getData (data: Function, vm: Component): any {
 
 const computedWatcherOptions = { lazy: true }
 
+// 对于计算属性的Watcher来说，它的lazy属性为true，因此new watcher()结尾时不会执行get()方法，而是直接返回undefined(在3127行)(求值会等到该计算属性被调用时才求值的)
 function initComputed (vm: Component, computed: Object) {
   // $flow-disable-line
+  // 先创建一个纯净对象
   const watchers = vm._computedWatchers = Object.create(null)
   // computed properties are just getters during SSR
+  // 判断是不是webpack的node环境 如果是 说明是ssr用的
   const isSSR = isServerRendering()
 
   for (const key in computed) {
     const userDef = computed[key]
     const getter = typeof userDef === 'function' ? userDef : userDef.get
+    // 如果没有设置getter 报错
     if (process.env.NODE_ENV !== 'production' && getter == null) {
       warn(
         `Getter is missing for computed property "${key}".`,
         vm
       )
     }
-
+    // 如果不是ssr服务端渲染
     if (!isSSR) {
       // create internal watcher for the computed property.
+      // 创建一系列观察者的
       watchers[key] = new Watcher(
         vm,
         getter || noop,
@@ -216,11 +222,16 @@ function initComputed (vm: Component, computed: Object) {
     }
 
     // component-defined computed properties are already defined on the
+    // 组件定义的计算属性已在组建的原型上定义
     // component prototype. We only need to define computed properties defined
+    //                      我们只需要定义计算属性在这里实例化
     // at instantiation here.
+    // 如果key在vm中没有定义 注:组件的计算属性在模块加载的时候已经被定义在了原型上面了
     if (!(key in vm)) {
+      // 再给他补上
       defineComputed(vm, key, userDef)
     } else if (process.env.NODE_ENV !== 'production') {
+      // computed和datasprops冲突的报错
       if (key in vm.$data) {
         warn(`The computed property "${key}" is already defined in data.`, vm)
       } else if (vm.$options.props && key in vm.$options.props) {
@@ -235,11 +246,16 @@ export function defineComputed (
   key: string,
   userDef: Object | Function
 ) {
+  // 是否需要缓存 SSR不缓存
   const shouldCache = !isServerRendering()
   if (typeof userDef === 'function') {
+    // 如果需要缓存 
     sharedPropertyDefinition.get = shouldCache
+    // 创建一个观察者
       ? createComputedGetter(key)
+      // 不需要缓存的话 undefined /window
       : createGetterInvoker(userDef)
+      // set是null
     sharedPropertyDefinition.set = noop
   } else {
     sharedPropertyDefinition.get = userDef.get
@@ -249,6 +265,7 @@ export function defineComputed (
       : noop
     sharedPropertyDefinition.set = userDef.set || noop
   }
+  // 没有set的报错
   if (process.env.NODE_ENV !== 'production' &&
       sharedPropertyDefinition.set === noop) {
     sharedPropertyDefinition.set = function () {
@@ -258,6 +275,7 @@ export function defineComputed (
       )
     }
   }
+  // defineProperty劫持
   Object.defineProperty(target, key, sharedPropertyDefinition)
 }
 
