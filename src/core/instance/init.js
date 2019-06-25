@@ -80,6 +80,7 @@ export function initMixin(Vue: Class<Component>) {
     initRender(vm)
     // 触发当前组件beforeCreate周期中写的函数 还有@hook:beforeCreate
     callHook(vm, 'beforeCreate')
+    // 在数据/道具之前解决注入问题 inject的实现
     initInjections(vm) // resolve injections before data/props
     initState(vm)
     initProvide(vm) // resolve provide after data/props

@@ -46,9 +46,13 @@ export function proxy (target: Object, sourceKey: string, key: string) {
 }
 
 export function initState (vm: Component) {
+  // 先让观察者清空
   vm._watchers = []
+  // 获取当前vue实例的初始化选项
   const opts = vm.$options
+  // 如果props存在 初始化props 完成数据绑定双向监听
   if (opts.props) initProps(vm, opts.props)
+  // 初始化方法
   if (opts.methods) initMethods(vm, opts.methods)
   if (opts.data) {
     initData(vm)
@@ -65,19 +69,27 @@ function initProps (vm: Component, propsOptions: Object) {
   const propsData = vm.$options.propsData || {}
   const props = vm._props = {}
   // cache prop keys so that future props updates can iterate using Array
+  // 缓存属性键，以便将来的属性更新可以使用数组迭代
   // instead of dynamic object key enumeration.
+  // 而不是动态对象键枚举
   const keys = vm.$options._propKeys = []
+  // 判断是否是根节点
   const isRoot = !vm.$parent
   // root instance props should be converted
+  // 如果不是根节点 禁用订阅发布模式
   if (!isRoot) {
     toggleObserving(false)
   }
   for (const key in propsOptions) {
+    // keys就是你所写的props的key
     keys.push(key)
+    // 经过校验之后的value 没值的话取默认值 取默认值要算 最好一直赋值
     const value = validateProp(key, propsOptions, propsData, vm)
     /* istanbul ignore else */
     if (process.env.NODE_ENV !== 'production') {
+      // 大写转驼峰之后的key
       const hyphenatedKey = hyphenate(key)
+      // 检查是否为保留属性 如果所写的propkey为保留属性 报错
       if (isReservedAttribute(hyphenatedKey) ||
           config.isReservedAttr(hyphenatedKey)) {
         warn(
@@ -85,7 +97,9 @@ function initProps (vm: Component, propsOptions: Object) {
           vm
         )
       }
+      // 添加一个发布订阅模式 用来监听数据
       defineReactive(props, key, value, () => {
+        // 如果不是根节点 并且在修改props中的值 那么报错 props应该是单向的 
         if (!isRoot && !isUpdatingChildComponent) {
           warn(
             `Avoid mutating a prop directly since the value will be ` +
@@ -102,6 +116,7 @@ function initProps (vm: Component, propsOptions: Object) {
     // static props are already proxied on the component's prototype
     // during Vue.extend(). We only need to proxy props defined at
     // instantiation here.
+    // 如果是vueExtend继承来的porps  需要监听
     if (!(key in vm)) {
       proxy(vm, `_props`, key)
     }
@@ -262,6 +277,7 @@ function createGetterInvoker(fn) {
 function initMethods (vm: Component, methods: Object) {
   const props = vm.$options.props
   for (const key in methods) {
+    // 如果methods的key对应的类型不是function 报错
     if (process.env.NODE_ENV !== 'production') {
       if (typeof methods[key] !== 'function') {
         warn(
@@ -270,12 +286,14 @@ function initMethods (vm: Component, methods: Object) {
           vm
         )
       }
+      // 如果methods的key和props的key重复 报错
       if (props && hasOwn(props, key)) {
         warn(
           `Method "${key}" has already been defined as a prop.`,
           vm
         )
       }
+      //  如果当前methods的key含有 $ or _ 并且和vue 实例中的方法重名  报错 检测methods和vue实例方法是否重名的
       if ((key in vm) && isReserved(key)) {
         warn(
           `Method "${key}" conflicts with an existing Vue instance method. ` +
@@ -283,6 +301,7 @@ function initMethods (vm: Component, methods: Object) {
         )
       }
     }
+    // 不是function  不绑定  是function 绑定在当前实例的作用域中
     vm[key] = typeof methods[key] !== 'function' ? noop : bind(methods[key], vm)
   }
 }
