@@ -352,15 +352,20 @@ export function deactivateChildComponent(vm: Component, direct?: boolean) {
 }
 
 export function callHook(vm: Component, hook: string) {
+  // 全局的Dep 
   // #7573 disable dep collection when invoking lifecycle hooks
   pushTarget()
+  // 在当前组件中查找hook周期是否存在
   const handlers = vm.$options[hook]
   const info = `${hook} hook`
+  // 如果存在就执行
   if (handlers) {
     for (let i = 0, j = handlers.length; i < j; i++) {
       invokeWithErrorHandling(handlers[i], vm, null, vm, info)
     }
   }
+  // 如果是 event 字符串中有 hook:，修改 vm._hasHookEvent 的状态。如果 _hasHookEvent 为 true，那么在触发各类生命周期钩子的时候会触发如 hook:created 事件
+  // Child(@hook:mounted="handleMounted")
   if (vm._hasHookEvent) {
     vm.$emit('hook:' + hook)
   }
