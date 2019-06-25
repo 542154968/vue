@@ -63,6 +63,7 @@ export function initState (vm: Component) {
   }
   // computed计算属性
   if (opts.computed) initComputed(vm, opts.computed)
+  // 初始化watch  如果watch存在 并且watch 不是火狐浏览器的watch ({}).watch 初始化watch
   if (opts.watch && opts.watch !== nativeWatch) {
     initWatch(vm, opts.watch)
   }
@@ -335,6 +336,7 @@ function initMethods (vm: Component, methods: Object) {
 function initWatch (vm: Component, watch: Object) {
   for (const key in watch) {
     const handler = watch[key]
+    // 数组 循环watch
     if (Array.isArray(handler)) {
       for (let i = 0; i < handler.length; i++) {
         createWatcher(vm, key, handler[i])
@@ -361,6 +363,10 @@ function createWatcher (
   return vm.$watch(expOrFn, handler, options)
 }
 
+// 监听 $data $props 
+// $set实现 
+// $delete实现
+// $watch实现
 export function stateMixin (Vue: Class<Component>) {
   // flow somehow has problems with directly declared definition object
   // when using Object.defineProperty, so we have to procedurally build up
@@ -384,7 +390,9 @@ export function stateMixin (Vue: Class<Component>) {
   Object.defineProperty(Vue.prototype, '$data', dataDef)
   Object.defineProperty(Vue.prototype, '$props', propsDef)
 
+  // ../observer/index
   Vue.prototype.$set = set
+  // ../observer/index
   Vue.prototype.$delete = del
 
   Vue.prototype.$watch = function (
