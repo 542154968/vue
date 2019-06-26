@@ -385,7 +385,7 @@ export function createPatchFunction (backend) {
   // set scope id attribute for scoped CSS.
   // this is implemented as a special case to avoid the overhead
   // of going through the normal attribute patching process.
-  // css scoped的实现
+  // css scoped的实现 但是不涉及到css的[scope Id]那里
   function setScope (vnode) {
     let i
     // 如果id存在
