@@ -37,6 +37,7 @@ Vue.prototype.__patch__ = inBrowser ? patch : noop
 // 判断el是否存在 是不是浏览器环境
 Vue.prototype.$mount = function (
   el?: string | Element,
+  // 保湿 干嘛的？？ 和服务端渲染有关
   hydrating?: boolean
 ): Component {
   el = el && inBrowser ? query(el) : undefined

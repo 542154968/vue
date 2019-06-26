@@ -78,15 +78,22 @@ export function lifecycleMixin(Vue: Class<Component>) {
     // Vue.prototype.__patch__ is injected in entry points
     // based on the rendering backend used.
     // core/vdom/patch createPatchFunction
+    // 如果前一个node不存在
     if (!prevVnode) {
       // initial render
+      // Vue.prototype.__path__根据执行环境不同  
+      // 浏览器环境里的调用的是path方法 platforms/web/runtime/index.js中  调用path方法
+      // path方法在platforms/web/runtime/path.js中， 这个方法又会调用createPatchFunction方法
+      // createPatchFunction方法在core/vdom/path.js中 大概就是通过vnode生成真实html 其中掺杂着 keepalive和scoped的处理
       vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */)
     } else {
       // updates
       vm.$el = vm.__patch__(prevVnode, vnode)
     }
+    // activeInstance 切换到前一个
     restoreActiveInstance()
     // update __vue__ reference
+    // 这个__vue__暂时不知道干啥的
     if (prevEl) {
       prevEl.__vue__ = null
     }
@@ -94,10 +101,12 @@ export function lifecycleMixin(Vue: Class<Component>) {
       vm.$el.__vue__ = vm
     }
     // if parent is an HOC, update its $el as well
+    // 如果parent是HOC（热更新）？ 也要更新它
     if (vm.$vnode && vm.$parent && vm.$vnode === vm.$parent._vnode) {
       vm.$parent.$el = vm.$el
     }
     // updated hook is called by the scheduler to ensure that children are
+    // 调度程序调用更新的钩子，以确保在父级的更新钩子中更新子级。
     // updated in a parent's updated hook.
   }
 
@@ -215,6 +224,7 @@ export function mountComponent(
   // we set this to vm._watcher inside the watcher's constructor
   // since the watcher's initial patch may call $forceUpdate (e.g. inside child
   // component's mounted hook), which relies on vm._watcher being already defined
+  // beforUpdate周期
   new Watcher(
     vm,
     updateComponent,
@@ -232,6 +242,7 @@ export function mountComponent(
 
   // manually mounted instance, call mounted on self
   // mounted is called for render-created child components in its inserted hook
+  // vm.$vnode 表示 Vue 实例的父虚拟 Node，所以它为 Null 则表示当前是根 Vue 的实例。
   if (vm.$vnode == null) {
     vm._isMounted = true
     callHook(vm, 'mounted')
