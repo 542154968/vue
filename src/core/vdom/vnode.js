@@ -6,6 +6,7 @@ export default class VNode {
   children: ?Array<VNode>;
   text: string | void;
   elm: Node | void;
+  // 创建一个具有指定的命名空间URI和限定名称的元素。
   ns: string | void;
   context: Component | void; // rendered in this component's scope
   key: string | number | void;
