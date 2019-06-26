@@ -331,6 +331,7 @@ export function createPatchFunction (backend) {
       }
     }
     // for slot content they should also get the scopeId from the host instance.
+    // 如果实例是激活的 并且是slot
     if (isDef(i = activeInstance) &&
       i !== vnode.context &&
       i !== vnode.fnContext &&
