@@ -20,8 +20,11 @@ let uid = 0
 
 /**
  * A watcher parses an expression, collects dependencies,
+ * 观察程序解析表达式，收集依赖项
  * and fires callback when the expression value changes.
+ * 并在表达式值更改时触发回调
  * This is used for both the $watch() api and directives.
+ * 用于$watch 和 dirctives指令
  */
 export default class Watcher {
   vm: Component;
@@ -44,18 +47,32 @@ export default class Watcher {
 
   constructor (
     vm: Component,
+    /**
+     * 需要监听的 方法/表达式。
+     * 举个例子：VueComponent 的 render function，
+     * 或者是 computed 的 getter 方法，
+     * 再或者是abc.bbc.aac这种类型的字符串
+     * （由于 vue 的 parsePath 方法是用 split('.') 来做的属性分割，所以不支持abc['bbc']）。
+     * expOrFn 如果是方法，
+     * 则直接赋值给 watcher 的 getter 属性，
+     * 如果是表达式，则会转换成方法再给 getter。
+     */
     expOrFn: string | Function,
     cb: Function,
     options?: ?Object,
     isRenderWatcher?: boolean
   ) {
+    // 获得实例对象
     this.vm = vm
+    // 如果是render观察者 下一段 这个this应该是个数组
     if (isRenderWatcher) {
       vm._watcher = this
     }
+    // 观察者列表加入this
     vm._watchers.push(this)
     // options
     if (options) {
+      // 强转布尔
       this.deep = !!options.deep
       this.user = !!options.user
       this.lazy = !!options.lazy
@@ -65,27 +82,36 @@ export default class Watcher {
       this.deep = this.user = this.lazy = this.sync = false
     }
     this.cb = cb
+    // 用于批量的UID
     this.id = ++uid // uid for batching
     this.active = true
     this.dirty = this.lazy // for lazy watchers
     this.deps = []
     this.newDeps = []
+    // 避免重复
     this.depIds = new Set()
+    // 避免重复
     this.newDepIds = new Set()
+    // 信息 开发环境显示
     this.expression = process.env.NODE_ENV !== 'production'
       ? expOrFn.toString()
       : ''
-    // parse expression for getter
+    // parse expression for getter coputed？
     if (typeof expOrFn === 'function') {
       this.getter = expOrFn
     } else {
+      // 解析简单路径。 可以匹配点操作符 比如传入'a.b.c' 调用thsi.getter(obj) obj是{a: {b:{c:1}}}这种，就可以取出c的值
       this.getter = parsePath(expOrFn)
+      // 如果路径不匹配 报错 不是简单的。操作符
       if (!this.getter) {
         this.getter = noop
         process.env.NODE_ENV !== 'production' && warn(
           `Failed watching path: "${expOrFn}" ` +
+          // 无法观察
           'Watcher only accepts simple dot-delimited paths. ' +
+          // 观察者只能观察简单的.分割程序
           'For full control, use a function instead.',
+          // 杜宇完全控制，请使用函数代替
           vm
         )
       }
