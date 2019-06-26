@@ -476,6 +476,7 @@ export function createPatchFunction (backend) {
     }
   }
 
+  // 检查是否有相同的key  判断数组可有重复项
   function checkDuplicateKeys (children) {
     const seenKeys = {}
     for (let i = 0; i < children.length; i++) {
