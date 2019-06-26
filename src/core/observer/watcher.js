@@ -123,12 +123,15 @@ export default class Watcher {
 
   /**
    * Evaluate the getter, and re-collect dependencies.
+   * 评估getter，并重新收集依赖项。
    */
   get () {
+    // 推入事件栈
     pushTarget(this)
     let value
     const vm = this.vm
     try {
+      // 通过执行getter获取value
       value = this.getter.call(vm, vm)
     } catch (e) {
       if (this.user) {
@@ -138,7 +141,12 @@ export default class Watcher {
       }
     } finally {
       // "touch" every property so they are all tracked as
+      // 触摸”每个属性，以便它们都被跟踪为
       // dependencies for deep watching
+      // 深度监视的依赖项
+
+      // 如果deep为true deep的实现
+      // 遍历value的所有项，触发已经被监听的getter 以便对象中的每个嵌套属性被收集为“深度”依赖关系。
       if (this.deep) {
         traverse(value)
       }
@@ -164,6 +172,7 @@ export default class Watcher {
 
   /**
    * Clean up for dependency collection.
+   * 清除依赖项集合
    */
   cleanupDeps () {
     let i = this.deps.length

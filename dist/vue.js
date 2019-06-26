@@ -424,6 +424,7 @@
 
     /**
      * Ignore certain custom elements
+     * 忽略某些自定义元素
      */
     ignoredElements: [],
 
@@ -448,6 +449,9 @@
     /**
      * Check if a tag is an unknown element.
      * Platform-dependent.
+     * 
+     * 检查标记是否为未知元素。
+     * 取决于平台。 
      */
     isUnknownElement: no,
 
@@ -483,9 +487,13 @@
 
   /**
    * unicode letters used for parsing html tags, component names and property paths.
+   * 用于分析HTML标记、组件名称和属性路径的Unicode字母。
    * using https://www.w3.org/TR/html53/semantics-scripting.html#potentialcustomelementname
+   * 使用https://www.w3.org/tr/html53/semantics scripting.html
    * skipping \u10000-\uEFFFF due to it freezing up PhantomJS
+   * 跳过\u10000-\ueffff，因为它冻结了phantomjs
    */
+  // ·À-ÖØ-öø-ͽͿ-῿‌-‍‿-⁀⁰-↏Ⰰ-⿯、-퟿豈-﷏ﷰ-�
   var unicodeRegExp = /a-zA-Z\u00B7\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u037D\u037F-\u1FFF\u200C-\u200D\u203F-\u2040\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD/;
 
   /**
@@ -511,9 +519,22 @@
 
   /**
    * Parse simple path.
+   * 解析简单路径。  ??? 看不懂啊
+   * 用.分割
+   * unicodeRegExp.source => "a-zA-Z\u00B7\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u037D\u037F-\u1FFF\u200C-\u200D\u203F-\u2040\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD"
+   * 传入 类似于'a.b.c'的字符串然后再传入含有这个路径的对象，可以取出这个值
+   * let obj = {
+      a:{
+        b: {c: {age: 3}}
+      }
+    }
+    parsePath('a.b.c')(obj) // {age: 3}
    */
   var bailRE = new RegExp(("[^" + (unicodeRegExp.source) + ".$_\\d]"));
   function parsePath (path) {
+    // 过滤非点操作符的路径 然后返回一个函数
+    // /[^a-zA-Z\u00B7\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u037D\u037F-\u1FFF\u200C-\u200D\u203F-\u2040\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD.$_\d]/
+    // 匹配任意不包含在如上的字符串
     if (bailRE.test(path)) {
       return
     }
@@ -4158,15 +4179,22 @@
       // Vue.prototype.__patch__ is injected in entry points
       // based on the rendering backend used.
       // core/vdom/patch createPatchFunction
+      // 如果前一个node不存在
       if (!prevVnode) {
         // initial render
+        // Vue.prototype.__path__根据执行环境不同  
+        // 浏览器环境里的调用的是path方法 platforms/web/runtime/index.js中  调用path方法
+        // path方法在platforms/web/runtime/path.js中， 这个方法又会调用createPatchFunction方法
+        // createPatchFunction方法在core/vdom/path.js中 大概就是通过vnode生成真实html 其中掺杂着 keepalive和scoped的处理
         vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */);
       } else {
         // updates
         vm.$el = vm.__patch__(prevVnode, vnode);
       }
+      // activeInstance 切换到前一个
       restoreActiveInstance();
       // update __vue__ reference
+      // 这个__vue__暂时不知道干啥的
       if (prevEl) {
         prevEl.__vue__ = null;
       }
@@ -4174,10 +4202,12 @@
         vm.$el.__vue__ = vm;
       }
       // if parent is an HOC, update its $el as well
+      // 如果parent是HOC（热更新）？ 也要更新它
       if (vm.$vnode && vm.$parent && vm.$vnode === vm.$parent._vnode) {
         vm.$parent.$el = vm.$el;
       }
       // updated hook is called by the scheduler to ensure that children are
+      // 调度程序调用更新的钩子，以确保在父级的更新钩子中更新子级。
       // updated in a parent's updated hook.
     };
 
@@ -4295,6 +4325,7 @@
     // we set this to vm._watcher inside the watcher's constructor
     // since the watcher's initial patch may call $forceUpdate (e.g. inside child
     // component's mounted hook), which relies on vm._watcher being already defined
+    // beforUpdate周期
     new Watcher(
       vm,
       updateComponent,
@@ -4312,6 +4343,7 @@
 
     // manually mounted instance, call mounted on self
     // mounted is called for render-created child components in its inserted hook
+    // vm.$vnode 表示 Vue 实例的父虚拟 Node，所以它为 Null 则表示当前是根 Vue 的实例。
     if (vm.$vnode == null) {
       vm._isMounted = true;
       callHook(vm, 'mounted');
@@ -4649,23 +4681,40 @@
 
   /**
    * A watcher parses an expression, collects dependencies,
+   * 观察程序解析表达式，收集依赖项
    * and fires callback when the expression value changes.
+   * 并在表达式值更改时触发回调
    * This is used for both the $watch() api and directives.
+   * 用于$watch 和 dirctives指令
    */
   var Watcher = function Watcher (
     vm,
+    /**
+     * 需要监听的 方法/表达式。
+     * 举个例子：VueComponent 的 render function，
+     * 或者是 computed 的 getter 方法，
+     * 再或者是abc.bbc.aac这种类型的字符串
+     * （由于 vue 的 parsePath 方法是用 split('.') 来做的属性分割，所以不支持abc['bbc']）。
+     * expOrFn 如果是方法，
+     * 则直接赋值给 watcher 的 getter 属性，
+     * 如果是表达式，则会转换成方法再给 getter。
+     */
     expOrFn,
     cb,
     options,
     isRenderWatcher
   ) {
+    // 获得实例对象
     this.vm = vm;
+    // 如果是render观察者 下一段 这个this应该是个数组
     if (isRenderWatcher) {
       vm._watcher = this;
     }
+    // 观察者列表加入this
     vm._watchers.push(this);
     // options
     if (options) {
+      // 强转布尔
       this.deep = !!options.deep;
       this.user = !!options.user;
       this.lazy = !!options.lazy;
@@ -4675,26 +4724,35 @@
       this.deep = this.user = this.lazy = this.sync = false;
     }
     this.cb = cb;
+    // 用于批量的UID
     this.id = ++uid$1; // uid for batching
     this.active = true;
     this.dirty = this.lazy; // for lazy watchers
     this.deps = [];
     this.newDeps = [];
+    // 避免重复
     this.depIds = new _Set();
+    // 避免重复
     this.newDepIds = new _Set();
+    // 信息 开发环境显示
     this.expression =  expOrFn.toString()
       ;
-    // parse expression for getter
+    // parse expression for getter coputed？
     if (typeof expOrFn === 'function') {
       this.getter = expOrFn;
     } else {
+      // 解析简单路径。 可以匹配点操作符 比如传入'a.b.c' 调用thsi.getter(obj) obj是{a: {b:{c:1}}}这种，就可以取出c的值
       this.getter = parsePath(expOrFn);
+      // 如果路径不匹配 报错 不是简单的。操作符
       if (!this.getter) {
         this.getter = noop;
          warn(
           "Failed watching path: \"" + expOrFn + "\" " +
+          // 无法观察
           'Watcher only accepts simple dot-delimited paths. ' +
+          // 观察者只能观察简单的.分割程序
           'For full control, use a function instead.',
+          // 杜宇完全控制，请使用函数代替
           vm
         );
       }
@@ -4706,6 +4764,7 @@
 
   /**
    * Evaluate the getter, and re-collect dependencies.
+   * 评估getter，并重新收集依赖项。
    */
   Watcher.prototype.get = function get () {
     pushTarget(this);
@@ -6045,6 +6104,7 @@
   }
 
   function createElementNS (namespace, tagName) {
+    // 创建一个具有指定的命名空间URI和限定名称的元素。
     return document.createElementNS(namespaceMap[namespace], tagName)
   }
 
@@ -6052,6 +6112,7 @@
     return document.createTextNode(text)
   }
 
+  // createComment() 方法可创建注释节点
   function createComment (text) {
     return document.createComment(text)
   }
@@ -6198,10 +6259,11 @@
     return map
   }
 
+  // createPatchFunction 内部内部定义了一系列的辅助方法，最终会返回上面那个 patch 方法，这个方法就赋值给了 vm.update 函数里调用的 vm._patch_。
   function createPatchFunction (backend) {
     var i, j;
     var cbs = {};
-
+    // modules 是  event style dom-props class attrs transition ref 和directives
     var modules = backend.modules;
     var nodeOps = backend.nodeOps;
     // const hooks = ['create', 'activate', 'update', 'remove', 'destroy']
@@ -6209,16 +6271,21 @@
       // cbs的key为hooks名称 每个cbs[hooksName] 默认为空数组
       cbs[hooks[i]] = [];
       for (j = 0; j < modules.length; ++j) {
+        // 若果modules有 hooks的一种  
         if (isDef(modules[j][hooks[i]])) {
+          // 这些周期里加入这些
+          // 例如 cbs[create] = [event[create], style[update]]
           cbs[hooks[i]].push(modules[j][hooks[i]]);
         }
       }
     }
 
+      // 新的空的Vnode 对象？
     function emptyNodeAt (elm) {
       return new VNode(nodeOps.tagName(elm).toLowerCase(), {}, [], undefined, elm)
     }
 
+    // 返回一个包装后的remove函数 执行结果是 当remove方法的监听者为0时， 删除这个childElm
     function createRmCb (childElm, listeners) {
       function remove () {
         if (--remove.listeners === 0) {
@@ -6229,6 +6296,7 @@
       return remove
     }
 
+    // 删除Node
     function removeNode (el) {
       var parent = nodeOps.parentNode(el);
       // element may have already been removed due to v-html / v-text
@@ -6237,11 +6305,13 @@
       }
     }
 
+    // 将一些元素标记为未知元素
     function isUnknownElement (vnode, inVPre) {
       return (
         !inVPre &&
         !vnode.ns &&
         !(
+          // 忽略某些自定义元素
           config.ignoredElements.length &&
           config.ignoredElements.some(function (ignore) {
             return isRegExp(ignore)
@@ -6249,31 +6319,43 @@
               : ignore === vnode.tag
           })
         ) &&
+        // 检查标记是否为未知元素。
         config.isUnknownElement(vnode.tag)
       )
     }
 
     var creatingElmInVPre = 0;
 
+    // 创建虚拟vnode和各个联系并且插入真实的DOM
     function createElm (
       vnode,
+      // 要插入的vnode队列
       insertedVnodeQueue,
       parentElm,
       refElm,
+      // 嵌套
       nested,
       ownerArray,
       index
     ) {
+      // 如果elm存在  所有者数组存在
       if (isDef(vnode.elm) && isDef(ownerArray)) {
         // This vnode was used in a previous render!
+        // 此Vnode在以前的渲染中使用过！
         // now it's used as a new node, overwriting its elm would cause
+        // 现在它被用作一个新节点，覆盖其ELM将导致
         // potential patch errors down the road when it's used as an insertion
+        // 用作插入时可能会出现补丁错误
         // reference node. Instead, we clone the node on-demand before creating
+        // 引用节点。相反，我们在创建
         // associated DOM element for it.
+        // 关联的DOM元素
         vnode = ownerArray[index] = cloneVNode(vnode);
       }
 
+      // 检查transition enter
       vnode.isRootInsert = !nested; // for transition enter check
+      // 如果组件有keepalive的 这样执行  不是keepalive  就是插入进去 不显示 ？？ 不一定对 没理解 
       if (createComponent(vnode, insertedVnodeQueue, parentElm, refElm)) {
         return
       }
@@ -6281,11 +6363,14 @@
       var data = vnode.data;
       var children = vnode.children;
       var tag = vnode.tag;
+      // tag存在的话
       if (isDef(tag)) {
         {
+          // pre干嘛的 
           if (data && data.pre) {
             creatingElmInVPre++;
           }
+          // 如果是不认识的element  报错
           if (isUnknownElement(vnode, creatingElmInVPre)) {
             warn(
               'Unknown custom element: <' + tag + '> - did you ' +
@@ -6296,26 +6381,37 @@
           }
         }
 
+        // ns 是个啥玩意？创建一个具有指定的命名空间URI和限定名称的元素。 document.createElementNS
+        // elm 是一个真实的接点
         vnode.elm = vnode.ns
+        // 创建一个具有指定的命名空间URI和限定名称的元素。
           ? nodeOps.createElementNS(vnode.ns, tag)
+          // 创建一个dom节点 未插入进真实DOM中
           : nodeOps.createElement(tag, vnode);
+          // 设置css scoped
         setScope(vnode);
 
         /* istanbul ignore if */
+        // 如果是 WEEX 环境 暂时不看
         {
+          // 创建children 真实dom
           createChildren(vnode, children, insertedVnodeQueue);
+          // 如果data存在 触发create周期的事件
           if (isDef(data)) {
             invokeCreateHooks(vnode, insertedVnodeQueue);
           }
+          // 加入到dom结构中
           insert(parentElm, vnode.elm, refElm);
         }
 
         if ( data && data.pre) {
           creatingElmInVPre--;
         }
+        // 如果tag不存在  是注释的话  createComment() 方法可创建注释节点
       } else if (isTrue(vnode.isComment)) {
         vnode.elm = nodeOps.createComment(vnode.text);
         insert(parentElm, vnode.elm, refElm);
+        // 不然就是textnode了 插入dom结构
       } else {
         vnode.elm = nodeOps.createTextNode(vnode.text);
         insert(parentElm, vnode.elm, refElm);
@@ -6324,18 +6420,30 @@
 
     function createComponent (vnode, insertedVnodeQueue, parentElm, refElm) {
       var i = vnode.data;
+      // 如果 i 存在
       if (isDef(i)) {
+        // 是否已激活 组件状态存在  并且 keepalive
         var isReactivated = isDef(vnode.componentInstance) && i.keepAlive;
         if (isDef(i = i.hook) && isDef(i = i.init)) {
+          // vnode.data 咋又成方法了？
           i(vnode, false /* hydrating */);
         }
         // after calling the init hook, if the vnode is a child component
+        // 当init周期执行之后 如果vnode是子组件
         // it should've created a child instance and mounted it. the child
+        // 它就需要建立一个子组件的实例，并且挂载生成它
         // component also has set the placeholder vnode's elm.
+        // 组件还需要设置占位符 vnode's 的elm
         // in that case we can just return the element and be done.
+        // 在这种请款我们只需要返回元素就会完成了
+
+        // 如果组件实例存在
         if (isDef(vnode.componentInstance)) {
+          // 初始化vnode 并加入队列
           initComponent(vnode, insertedVnodeQueue);
+          // 如果refElm存在 插入到它之前 不存在 插入到parentElm里面
           insert(parentElm, vnode.elm, refElm);
+          // 如果是已经激活的
           if (isTrue(isReactivated)) {
             reactivateComponent(vnode, insertedVnodeQueue, parentElm, refElm);
           }
@@ -6365,11 +6473,17 @@
     function reactivateComponent (vnode, insertedVnodeQueue, parentElm, refElm) {
       var i;
       // hack for #4339: a reactivated component with inner transition
+      // 一个激活的组件里面嵌套transition
       // does not trigger because the inner node's created hooks are not called
+      // 不触发 因为嵌套的node的created hooks 没有再次触发
       // again. It's not ideal to involve module-specific logic in here but
+      // 在这里涉及模块特定逻辑并不理想
       // there doesn't seem to be a better way to do it.
+      // 但是似乎没有更好的办法
       var innerNode = vnode;
+      // 如果vnode的组件实例存在
       while (innerNode.componentInstance) {
+        // 循环将activete周期加入队列并触发
         innerNode = innerNode.componentInstance._vnode;
         if (isDef(i = innerNode.data) && isDef(i = i.transition)) {
           for (i = 0; i < cbs.activate.length; ++i) {
@@ -6380,31 +6494,45 @@
         }
       }
       // unlike a newly created component,
+      // 与新创建的组件不同，
       // a reactivated keep-alive component doesn't insert itself
+      // 重新激活的keep-alive组件不会插入自身
       insert(parentElm, vnode.elm, refElm);
     }
 
+    // 插入的逻辑
     function insert (parent, elm, ref) {
+      // 如果父存在
       if (isDef(parent)) {
+        // 如果 ref存在 真实DOM
         if (isDef(ref)) {
+          // (nodeOps.parentNode(ref) 返回 node.parentNode 就是 ref.parentNode  等于 parent elm加入到ref之前
           if (nodeOps.parentNode(ref) === parent) {
+            //  parentNode.insertBefore(newNode, referenceNode)
             nodeOps.insertBefore(parent, elm, ref);
           }
         } else {
+          // 如果ref不存在 插入到parent 作为其子
           nodeOps.appendChild(parent, elm);
         }
       }
     }
 
+    // 创建children dom
     function createChildren (vnode, children, insertedVnodeQueue) {
+      // 如果children是个数组
       if (Array.isArray(children)) {
+        // 如果是开发环境 检查是否有相同的key  相同的key在update的时候会有问题
         {
           checkDuplicateKeys(children);
         }
+        // 循环创建
         for (var i = 0; i < children.length; ++i) {
           createElm(children[i], insertedVnodeQueue, vnode.elm, null, true, children, i);
         }
+        // 如果不是保留的
       } else if (isPrimitive(vnode.text)) {
+        // 插入node
         nodeOps.appendChild(vnode.elm, nodeOps.createTextNode(String(vnode.text)));
       }
     }
@@ -6416,6 +6544,7 @@
       return isDef(vnode.tag)
     }
 
+    // 触发create周期的事件
     function invokeCreateHooks (vnode, insertedVnodeQueue) {
       for (var i$1 = 0; i$1 < cbs.create.length; ++i$1) {
         cbs.create[i$1](emptyNode, vnode);
@@ -6430,12 +6559,16 @@
     // set scope id attribute for scoped CSS.
     // this is implemented as a special case to avoid the overhead
     // of going through the normal attribute patching process.
+    // css scoped的实现 但是不涉及到css的[scope Id]那里
     function setScope (vnode) {
       var i;
+      // 如果id存在
       if (isDef(i = vnode.fnScopeId)) {
+        // setAttritube 设置
         nodeOps.setStyleScope(vnode.elm, i);
       } else {
         var ancestor = vnode;
+        // 如果 id 不存在 网上查找 让每个有scopeId的都设置上
         while (ancestor) {
           if (isDef(i = ancestor.context) && isDef(i = i.$options._scopeId)) {
             nodeOps.setStyleScope(vnode.elm, i);
@@ -6444,6 +6577,7 @@
         }
       }
       // for slot content they should also get the scopeId from the host instance.
+      // 如果实例是激活的 并且是slot 也加上scope
       if (isDef(i = activeInstance) &&
         i !== vnode.context &&
         i !== vnode.fnContext &&
@@ -6588,6 +6722,7 @@
       }
     }
 
+    // 检查是否有相同的key  判断数组可有重复项
     function checkDuplicateKeys (children) {
       var seenKeys = {};
       for (var i = 0; i < children.length; i++) {
@@ -8802,11 +8937,13 @@
   /*  */
 
   // the directive module should be applied last, after all
+  // directive module 要最后引入，在所有的built-in 模块应用之后
   // built-in modules have been applied.
   var modules = platformModules.concat(baseModules);
 
   // nodeOps就是增删改dom的一些方法
   // 这里就用到了一个·函数柯理化·的技巧，通过 createPatchFunction 把差异化参数提前固化，这样不用每次调用 patch 的时候都传递 nodeOps 和 modules 了。
+  // 创建真实DOM的逻辑
   var patch = createPatchFunction({ nodeOps: nodeOps, modules: modules });
 
   /**
@@ -9401,6 +9538,7 @@
   // 判断el是否存在 是不是浏览器环境
   Vue.prototype.$mount = function (
     el,
+    // 保湿 干嘛的？？ 和服务端渲染有关
     hydrating
   ) {
     el = el && inBrowser ? query(el) : undefined;
