@@ -2,8 +2,9 @@
 
 import * as nodeOps from 'web/runtime/node-ops'
 import { createPatchFunction } from 'core/vdom/patch'
+// 在这里重命名了这些modules  我以为是一样名字 我找半天。。。 这个引入的是 ref 和directives 两个功能
 import baseModules from 'core/vdom/modules/index'
-// 这个方法在哪呢 托马的 在哪呢？？
+// 在这里重命名了这些modules  我以为是一样名字 我找半天。。。 这个引入的是 event style dom-props class attrs transition
 import platformModules from 'web/runtime/modules/index'
 
 // the directive module should be applied last, after all
