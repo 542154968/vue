@@ -23,6 +23,7 @@ export function createTextNode (text: string): Text {
   return document.createTextNode(text)
 }
 
+// createComment() 方法可创建注释节点
 export function createComment (text: string): Comment {
   return document.createComment(text)
 }

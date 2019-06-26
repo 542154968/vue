@@ -75,6 +75,7 @@ export default ({
 
   /**
    * Ignore certain custom elements
+   * 忽略某些自定义元素
    */
   ignoredElements: [],
 
@@ -99,6 +100,9 @@ export default ({
   /**
    * Check if a tag is an unknown element.
    * Platform-dependent.
+   * 
+   * 检查标记是否为未知元素。
+   * 取决于平台。 
    */
   isUnknownElement: no,
 

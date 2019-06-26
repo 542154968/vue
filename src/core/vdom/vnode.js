@@ -5,6 +5,7 @@ export default class VNode {
   data: VNodeData | void;
   children: ?Array<VNode>;
   text: string | void;
+  // 真实dom
   elm: Node | void;
   // 创建一个具有指定的命名空间URI和限定名称的元素。
   ns: string | void;
@@ -28,6 +29,7 @@ export default class VNode {
   fnContext: Component | void; // real context vm for functional nodes
   fnOptions: ?ComponentOptions; // for SSR caching
   devtoolsMeta: ?Object; // used to store functional render context for devtools
+  // 可用来css scoped
   fnScopeId: ?string; // functional scope id support
 
   constructor (
