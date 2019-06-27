@@ -17,6 +17,7 @@ import {
   isServerRendering
 } from '../util/index'
 
+// 将array方法二次封装 变异  就是数组的一些方法可以驱动视图更新
 const arrayKeys = Object.getOwnPropertyNames(arrayMethods)
 
 /**
@@ -53,14 +54,20 @@ export class Observer {
     this.vmCount = 0
     // 向value添加'__ob__' 值为Observer属性
     def(value, '__ob__', this)
-
+    // 如果是数组
     if (Array.isArray(value)) {
+      // '__proto__' in {}  检测浏览器是否允许使用__proto__ 因为这个不规范 
       if (hasProto) {
+        // target.__proto__ = src
+        // 将target的__proto__ 指向 变异后的数组prototype 相当于连起两个原型链 
         protoAugment(value, arrayMethods)
       } else {
+        // 如果不支持  就拷贝所有方法  
         copyAugment(value, arrayMethods, arrayKeys)
       }
+      // 为每个创建一个观察者
       this.observeArray(value)
+      // 如果是对象形式
     } else {
       this.walk(value)
     }
@@ -68,7 +75,9 @@ export class Observer {
 
   /**
    * Walk through all properties and convert them into
+   * 遍历所有属性并将它们转换为
    * getter/setters. This method should only be called when
+   * getter/setter 这个方法只有在值类型为对象的时候才应调用
    * value type is Object.
    */
   walk (obj: Object) {
@@ -125,8 +134,11 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
     return
   }
   let ob: Observer | void
+  // 已经监听过得 就使用现有的
   if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
+    // value.__ob__ 就是 Observer对象
     ob = value.__ob__
+    // 没监听到的就new一个
   } else if (
     shouldObserve &&
     !isServerRendering() &&
@@ -136,6 +148,7 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
   ) {
     ob = new Observer(value)
   }
+  // 如果是根data 并且观察成功 ++
   if (asRootData && ob) {
     ob.vmCount++
   }
@@ -153,30 +166,41 @@ export function defineReactive (
   customSetter?: ?Function,
   shallow?: boolean
 ) {
+  // 创建一个dep 用来管理watcher
   const dep = new Dep()
 
+  // 如果这个属性不能修改 return
   const property = Object.getOwnPropertyDescriptor(obj, key)
   if (property && property.configurable === false) {
     return
   }
 
   // cater for pre-defined getter/setters
+  // 获取当前的getter  setter
   const getter = property && property.get
   const setter = property && property.set
+  // 如果getter不存在 或者 setter存在 并且当前函数只穿了obj 和 key   设置val为obj[key]
+  // 判断传的是个没有人工defineProperty的对象
   if ((!getter || setter) && arguments.length === 2) {
     val = obj[key]
   }
 
+  // shallow 是个啥  然后给它创建个观察者
   let childOb = !shallow && observe(val)
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
+    // get就是收集的 加入wacher中
     get: function reactiveGetter () {
       const value = getter ? getter.call(obj) : val
+      // 如果全局的wather存在
       if (Dep.target) {
+        // 加入wather的俩set数组中
         dep.depend()
+        // 
         if (childOb) {
           childOb.dep.depend()
+          // 如果value是个数组 就遍历每一项 加入到watcher的set中
           if (Array.isArray(value)) {
             dependArray(value)
           }
@@ -185,8 +209,10 @@ export function defineReactive (
       return value
     },
     set: function reactiveSetter (newVal) {
+      // 通过getter获取老的值
       const value = getter ? getter.call(obj) : val
       /* eslint-disable no-self-compare */
+      // 如果相等 就不执行了
       if (newVal === value || (newVal !== newVal && value !== value)) {
         return
       }
@@ -196,12 +222,16 @@ export function defineReactive (
       }
       // #7981: for accessor properties without setter
       if (getter && !setter) return
+      // 如果setter存在 执行setter
       if (setter) {
         setter.call(obj, newVal)
+        // 不存在直接赋值
       } else {
         val = newVal
       }
+      // 重新给新值添加观察者
       childOb = !shallow && observe(newVal)
+      // 通知去执行update方法
       dep.notify()
     }
   })
@@ -212,6 +242,7 @@ export function defineReactive (
  * triggers change notification if the property doesn't
  * already exist.
  */
+// $set
 export function set (target: Array<any> | Object, key: any, val: any): any {
   // 如果set的target是空的 报错
   if (process.env.NODE_ENV !== 'production' &&
@@ -257,6 +288,8 @@ export function set (target: Array<any> | Object, key: any, val: any): any {
 /**
  * Delete a property and trigger change if necessary.
  */
+
+ // $delete
 export function del (target: Array<any> | Object, key: any) {
   // 值不存在不删除
   if (process.env.NODE_ENV !== 'production' &&

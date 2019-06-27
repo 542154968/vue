@@ -35,6 +35,7 @@ export default class Dep {
   depend () {
     // dep.taget 是啥呦 
     // 字面意思是 dep的触发者添加一个dep
+    // 其实就是一个全局的Watcher 触发watcher的addDep方法
     if (Dep.target) {
       Dep.target.addDep(this)
     }

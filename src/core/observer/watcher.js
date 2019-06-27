@@ -159,6 +159,7 @@ export default class Watcher {
 
   /**
    * Add a dependency to this directive.
+   * 给这俩数组加入id 
    */
   addDep (dep: Dep) {
     const id = dep.id
