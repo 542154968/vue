@@ -1,4 +1,5 @@
 /* @flow */
+// 观察者模块开始啦
 
 import Dep from './dep'
 import VNode from '../vdom/vnode'

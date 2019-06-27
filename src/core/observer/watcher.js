@@ -147,6 +147,7 @@ export default class Watcher {
 
       // 如果deep为true deep的实现
       // 遍历value的所有项，触发已经被监听的getter 以便对象中的每个嵌套属性被收集为“深度”依赖关系。
+      // 为啥会触发 要登看完 dep  才知道嘎嘎 
       if (this.deep) {
         traverse(value)
       }
