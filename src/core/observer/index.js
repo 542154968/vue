@@ -33,9 +33,13 @@ export function toggleObserving (value: boolean) {
 
 /**
  * Observer class that is attached to each observed
+ * 每个观察到的观察者类
  * object. Once attached, the observer converts the target
+ * 对象 一旦连接，观察者将转换目标
  * object's property keys into getter/setters that
+ * 对象的属性键到getter/setter中，
  * collect dependencies and dispatch updates.
+ * 收集依赖项和调度更新
  */
 export class Observer {
   value: any;
@@ -44,9 +48,12 @@ export class Observer {
 
   constructor (value: any) {
     this.value = value
+    // 创建一个dep 用于收集getter 对watcher管理
     this.dep = new Dep()
     this.vmCount = 0
+    // 向value添加'__ob__' 值为Observer属性
     def(value, '__ob__', this)
+
     if (Array.isArray(value)) {
       if (hasProto) {
         protoAugment(value, arrayMethods)
