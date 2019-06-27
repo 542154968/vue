@@ -22,6 +22,8 @@ export function isReserved (str: string): boolean {
 
 /**
  * Define a property.
+ * 定义属性。
+ * 定义这个对象的值可被改变 可被重写 是否可被枚举
  */
 export function def (obj: Object, key: string, val: any, enumerable?: boolean) {
   Object.defineProperty(obj, key, {

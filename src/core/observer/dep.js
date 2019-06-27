@@ -8,18 +8,22 @@ let uid = 0
 
 /**
  * A dep is an observable that can have multiple
+ * DEP是一个可观测的，可以有多个
  * directives subscribing to it.
+ * 订阅它的指令
  */
 export default class Dep {
+  // 全局唯一的watcher
   static target: ?Watcher;
   id: number;
   subs: Array<Watcher>;
 
   constructor () {
+    // uid可以看到一共有多少个dep
     this.id = uid++
     this.subs = []
   }
-
+  
   addSub (sub: Watcher) {
     this.subs.push(sub)
   }
@@ -29,6 +33,8 @@ export default class Dep {
   }
 
   depend () {
+    // dep.taget 是啥呦 
+    // 字面意思是 dep的触发者添加一个dep
     if (Dep.target) {
       Dep.target.addDep(this)
     }
@@ -36,11 +42,16 @@ export default class Dep {
 
   notify () {
     // stabilize the subscriber list first
+    // 首先浅拷贝一下 避免数据更改出现问题
     const subs = this.subs.slice()
+    // 开发模式如果没有async  让subs排序 按顺序执行 猜想 打包后的会自动排序
     if (process.env.NODE_ENV !== 'production' && !config.async) {
       // subs aren't sorted in scheduler if not running async
+      // 如果不运行async，则不会在计划程序中对sub进行排序
       // we need to sort them now to make sure they fire in correct
+      // 我们现在需要对它们进行排序，以确保它们正确触发
       // order
+      // 命令
       subs.sort((a, b) => a.id - b.id)
     }
     for (let i = 0, l = subs.length; i < l; i++) {
