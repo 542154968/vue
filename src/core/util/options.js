@@ -411,7 +411,7 @@ export function mergeOptions(
   // 所以如果_base不存在 说明不是合并后的
 
   // 由这个实现可以看出 vue中的继承就是单一继承
-  // 而合并就是多个不想关或相关的合在一起 虽说你要强行往上追溯也能追溯  这个可以理解为多继承？
+  // 而合并就是多个不想关或相关的合在一起 虽说你要强行往上追溯也能追溯 通过属性的mixin?  这个可以理解为多继承？
   // 这就解释了我心中的疑惑 为啥extends 只能写一个  
   if (!child._base) {
     // 如果子已经继承了
@@ -439,7 +439,11 @@ export function mergeOptions(
     }
   }
   function mergeField(key) {
+    // starts是合并规则 
+    // 默认是  childVal === undefined ? parentVal : childVal
     const strat = strats[key] || defaultStrat
+    // 默认规则 带来的结果是 子不存在使用父 
+    // 子存在就是子
     options[key] = strat(parent[key], child[key], vm, key)
   }
   return options
