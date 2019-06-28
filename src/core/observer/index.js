@@ -69,6 +69,7 @@ export class Observer {
       this.observeArray(value)
       // 如果是对象形式
     } else {
+      // 转换为 getter/setter
       this.walk(value)
     }
   }
