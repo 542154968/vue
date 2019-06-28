@@ -21,7 +21,11 @@ import {
 export function initGlobalAPI (Vue: GlobalAPI) {
   // config
   const configDef = {}
+  // config是vue的一些初始化配置
+  // Vue.config 是一个对象，包含 Vue 的全局配置。可以在启动应用之前修改下列属性
+  // 获取configDef的时候返回的是vue全局配置文件
   configDef.get = () => config
+  // 如果尝试替换全局对象会报错 set就是替换  单一赋值即可
   if (process.env.NODE_ENV !== 'production') {
     configDef.set = () => {
       warn(
@@ -29,6 +33,7 @@ export function initGlobalAPI (Vue: GlobalAPI) {
       )
     }
   }
+  // 给vue config赋值 这就是vueconfig的由来
   Object.defineProperty(Vue, 'config', configDef)
 
   // exposed util methods.
