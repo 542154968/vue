@@ -152,6 +152,8 @@ export default ({
 
   /**
    * Exposed for legacy reasons
+   * 因为遗留原因暴露的 
+   * 全是生命周期的名称
    */
   _lifecycleHooks: LIFECYCLE_HOOKS
 }: Config)
