@@ -47,12 +47,17 @@ export function initGlobalAPI (Vue: GlobalAPI) {
     warn,
     // 浅拷贝
     extend,
+    // extends 和 mixins
     mergeOptions,
+    // /observer/index 创建 get set dep watcher
     defineReactive
   }
 
+  // $set
   Vue.set = set
+  // $delete
   Vue.delete = del
+  // $nextTick
   Vue.nextTick = nextTick
 
   // 2.6 explicit observable API
