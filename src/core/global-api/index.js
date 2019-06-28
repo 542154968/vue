@@ -37,10 +37,15 @@ export function initGlobalAPI (Vue: GlobalAPI) {
   Object.defineProperty(Vue, 'config', configDef)
 
   // exposed util methods.
+  // 公开了Util方法。
   // NOTE: these are not considered part of the public API - avoid relying on
+  // 注意：这些不是公共API的一部分-避免依赖
   // them unless you are aware of the risk.
+  // 除非你意识到风险。
   Vue.util = {
+    // vue警告的封装
     warn,
+    // 浅拷贝
     extend,
     mergeOptions,
     defineReactive

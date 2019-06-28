@@ -375,7 +375,9 @@ function assertObjectType(name: string, value: any, vm: ?Component) {
 
 /**
  * Merge two option objects into a new one.
+ * 将两个选项对象合并为新对象。
  * Core utility used in both instantiation and inheritance.
+ * 用于实例化和继承的核心实用程序。
  */
 export function mergeOptions(
   parent: Object,
@@ -386,7 +388,7 @@ export function mergeOptions(
     // 判断组件名称是否合法
     checkComponents(child)
   }
-
+  // 如果是组件
   if (typeof child === 'function') {
     child = child.options
   }
@@ -399,13 +401,26 @@ export function mergeOptions(
   normalizeDirectives(child)
 
   // Apply extends and mixins on the child options,
+  // /在子选项上应用扩展和混合，
   // but only if it is a raw options object that isn't
+  // 但仅当它是一个原始选项对象而不是
   // the result of another mergeOptions call.
+  // 另一个mergeoptions调用的结果。
   // Only merged options has the _base property.
+  // 只有合并的选项具有_base属性。
+  // 所以如果_base不存在 说明不是合并后的
+
+  // 由这个实现可以看出 vue中的继承就是单一继承
+  // 而合并就是多个不想关或相关的合在一起 虽说你要强行往上追溯也能追溯  这个可以理解为多继承？
+  // 这就解释了我心中的疑惑 为啥extends 只能写一个  
   if (!child._base) {
+    // 如果子已经继承了
+    // 那么parent要合并子继承的和自身
     if (child.extends) {
       parent = mergeOptions(parent, child.extends, vm)
     }
+    // 如果子含有mixins
+    // 那么parent要合并所有的mixins
     if (child.mixins) {
       for (let i = 0, l = child.mixins.length; i < l; i++) {
         parent = mergeOptions(parent, child.mixins[i], vm)
