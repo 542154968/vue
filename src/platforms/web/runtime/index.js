@@ -1,5 +1,6 @@
 /* @flow */
 
+// 其实这个文件才是项目起点 。。。。
 import Vue from 'core/index'
 import config from 'core/config'
 import { extend, noop } from 'shared/util'
