@@ -243,7 +243,7 @@ export function defineReactive (
  * triggers change notification if the property doesn't
  * already exist.
  */
-// $set
+// $set 实现
 export function set (target: Array<any> | Object, key: any, val: any): any {
   // 如果set的target是空的 报错
   if (process.env.NODE_ENV !== 'production' &&
@@ -291,7 +291,7 @@ export function set (target: Array<any> | Object, key: any, val: any): any {
  * Delete a property and trigger change if necessary.
  */
 
- // $delete
+ // $delete 实现
 export function del (target: Array<any> | Object, key: any) {
   // 值不存在不删除
   if (process.env.NODE_ENV !== 'production' &&

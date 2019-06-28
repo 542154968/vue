@@ -53,9 +53,9 @@ export function initGlobalAPI (Vue: GlobalAPI) {
     defineReactive
   }
 
-  // $set
+  // $set 实现
   Vue.set = set
-  // $delete
+  // $delete 实现
   Vue.delete = del
   // $nextTick
   Vue.nextTick = nextTick
