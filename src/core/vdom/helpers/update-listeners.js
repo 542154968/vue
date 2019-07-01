@@ -36,6 +36,8 @@ const normalizeEvent = cached((name: string): {
   }
 })
 
+// 将函数或函数数组作为属性挂到函数上 可以调用执行 
+// 这样做的原因可能是方便执行事件，有时候一个DOM会有多个相同事件，此时事件会是一个数组，通过这样处理后，无论是单一函数还是函数数组都可以通过直接调用invoker来执行。
 export function createFnInvoker (fns: Function | Array<Function>, vm: ?Component): Function {
   function invoker () {
     const fns = invoker.fns

@@ -33,17 +33,24 @@ if (isIE9) {
 }
 
 const directive = {
+  // 插入的时候
   inserted (el, binding, vnode, oldVnode) {
+    // 如果是select
     if (vnode.tag === 'select') {
       // #6903
+      // 如果老的node的dom存在 并且 vOptions不在
       if (oldVnode.elm && !oldVnode.elm._vOptions) {
+        // 给vnode追加或添加postpatch hook
         mergeVNodeHook(vnode, 'postpatch', () => {
           directive.componentUpdated(el, binding, vnode)
         })
+        // 设置选中
       } else {
         setSelected(el, binding, vnode.context)
       }
+      // 拷贝复制
       el._vOptions = [].map.call(el.options, getValue)
+      // 如是是text
     } else if (vnode.tag === 'textarea' || isTextInputType(el.type)) {
       el._vModifiers = binding.modifiers
       if (!binding.modifiers.lazy) {
@@ -85,9 +92,13 @@ const directive = {
   }
 }
 
+// 设置选中
 function setSelected (el, binding, vm) {
+  // 
   actuallySetSelected(el, binding, vm)
   /* istanbul ignore if */
+  // 如果是IE  加入到宏事件  等待从event queue中获取执行
+  // 等待当前已经加入队列中的宏任务和微任务执行完之后再执行 
   if (isIE || isEdge) {
     setTimeout(() => {
       actuallySetSelected(el, binding, vm)
@@ -98,6 +109,7 @@ function setSelected (el, binding, vm) {
 function actuallySetSelected (el, binding, vm) {
   const value = binding.value
   const isMultiple = el.multiple
+  // 如果含有multiple属性 判断不是数组报错
   if (isMultiple && !Array.isArray(value)) {
     process.env.NODE_ENV !== 'production' && warn(
       `<select multiple v-model="${binding.expression}"> ` +
@@ -109,14 +121,19 @@ function actuallySetSelected (el, binding, vm) {
     return
   }
   let selected, option
+  // 
   for (let i = 0, l = el.options.length; i < l; i++) {
     option = el.options[i]
+    // 如果多选的
     if (isMultiple) {
+      // 是否已经选中
       selected = looseIndexOf(value, getValue(option)) > -1
+      // 设置选中项
       if (option.selected !== selected) {
         option.selected = selected
       }
     } else {
+      // 松散对比 设置选中 单选的
       if (looseEqual(getValue(option), value)) {
         if (el.selectedIndex !== i) {
           el.selectedIndex = i
