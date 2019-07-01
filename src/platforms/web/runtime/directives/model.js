@@ -138,6 +138,7 @@ function onCompositionEnd (e) {
   trigger(e.target, 'input')
 }
 
+// vue中 trigger的实现
 function trigger (el, type) {
   const e = document.createEvent('HTMLEvents')
   e.initEvent(type, true, true)
