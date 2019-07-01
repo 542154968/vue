@@ -100,6 +100,8 @@ export function initGlobalAPI (Vue: GlobalAPI) {
   initUse(Vue)
   // vue.mixin的实现  就是mergeOptions
   initMixin(Vue)
+  // vue.extend 的实现
   initExtend(Vue)
+  // 全局filters components directives
   initAssetRegisters(Vue)
 }

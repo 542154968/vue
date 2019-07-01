@@ -3,15 +3,18 @@
 import { ASSET_TYPES } from 'shared/constants'
 import { isPlainObject, validateComponentName } from '../util/index'
 
+// 注册全局 components 和filters 和directives 
 export function initAssetRegisters (Vue: GlobalAPI) {
   /**
    * Create asset registration methods.
    */
   ASSET_TYPES.forEach(type => {
+    // vue.created vue.mounted
     Vue[type] = function (
       id: string,
       definition: Function | Object
     ): Function | Object | void {
+      // 如果定义的不存在
       if (!definition) {
         return this.options[type + 's'][id]
       } else {

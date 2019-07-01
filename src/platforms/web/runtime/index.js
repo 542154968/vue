@@ -1,6 +1,7 @@
 /* @flow */
 
 // 其实这个文件才是项目起点 。。。。
+// vueconfig util set del next-tick observable _base keepalive use mixin extend directives components filters的注册 ssr相关 版本号
 import Vue from 'core/index'
 import config from 'core/config'
 import { extend, noop } from 'shared/util'
