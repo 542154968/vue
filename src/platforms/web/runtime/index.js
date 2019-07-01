@@ -30,6 +30,7 @@ import {
 import { patch } from './patch'
 // v-model  v-show
 import platformDirectives from './directives/index'
+// transition transition-group
 import platformComponents from './components/index'
 
 // install platform specific utils
@@ -40,6 +41,7 @@ Vue.config.getTagNamespace = getTagNamespace
 Vue.config.isUnknownElement = isUnknownElement
 
 // install platform runtime directives & components
+// v-model  v-show
 extend(Vue.options.directives, platformDirectives)
 extend(Vue.options.components, platformComponents)
 

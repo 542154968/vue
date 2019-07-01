@@ -30,7 +30,10 @@ export const transitionProps = {
 }
 
 // in case the child is also an abstract component, e.g. <keep-alive>
+// 如果子组件也是抽象组件，例如<keep alive>
 // we want to recursively retrieve the real component to be rendered
+// 我们要递归地检索要呈现的实际组件
+// 获取非抽象组件
 function getRealChild (vnode: ?VNode): ?VNode {
   const compOptions: ?VNodeComponentOptions = vnode && vnode.componentOptions
   if (compOptions && compOptions.Ctor.options.abstract) {
