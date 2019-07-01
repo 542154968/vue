@@ -175,7 +175,7 @@ export function nextTick (cb?: Function, ctx?: Object) {
   // 通过了解宏任务 微任务 我们知道 微任务的等待是最少的  
   // 他是等当前宏任务执行完毕之后就执行的 但是宏任务就要等到添加它之前的所有宏任务和微任务执行完毕（event loop 到他的环节）才开始执行
 
-  // pending是false的话 
+  // pending是false的话  说明没有事件执行 执行它
   if (!pending) {
     pending = true
     timerFunc()
