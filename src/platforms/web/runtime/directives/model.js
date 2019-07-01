@@ -50,9 +50,10 @@ const directive = {
       }
       // 拷贝复制
       el._vOptions = [].map.call(el.options, getValue)
-      // 如是是text
+      // 如是是textarea
     } else if (vnode.tag === 'textarea' || isTextInputType(el.type)) {
       el._vModifiers = binding.modifiers
+      // 懒模式？如果有.lazy 就是lazy修饰符 change触发end
       if (!binding.modifiers.lazy) {
         el.addEventListener('compositionstart', onCompositionStart)
         el.addEventListener('compositionend', onCompositionEnd)
