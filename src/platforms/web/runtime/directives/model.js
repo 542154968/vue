@@ -9,10 +9,23 @@ import { mergeVNodeHook } from 'core/vdom/helpers/index'
 import { warn, isIE9, isIE, isEdge } from 'core/util/index'
 
 /* istanbul ignore if */
+// 如果是IE9
 if (isIE9) {
   // http://www.matts411.com/post/internet-explorer-9-oninput/
+  // 当网页上选定文本更改时
+  /**
+   * 原来IE9输入框input事件无法监听到键盘的backspace键和delete键对内容的改变，
+   * 以及右键菜单的剪切、撤销、删除对内容的改变，
+   * 用keyup事件我们可以解决键盘backspace键delete键的问题，
+   * 但是对于右键对于文本的操作还是无能为力，
+   * 还好有selectionchange事件，
+   * 它可以在文档上的当前文本选择被改变时触发，
+   * 例如文本选择、剪切、删除、粘贴等操作。
+   */
   document.addEventListener('selectionchange', () => {
+    // 获取当前focus/激活的元素
     const el = document.activeElement
+    // 如果vmodel存在  触发一下input事件  干嘛用的？
     if (el && el.vmodel) {
       trigger(el, 'input')
     }
