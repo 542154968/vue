@@ -42,7 +42,10 @@ export function getTagNamespace (tag: string): ?string {
     return 'svg'
   }
   // basic support for MathML
+  // 对MathML的基本支持
   // note it doesn't support other MathML elements being component roots
+  // 注意，它不支持其他MathML元素作为组件根
+  // MathML 是数学标记语言，是一种基于XML（标准通用标记语言的子集）的标准，用来在互联网上书写数学符号和公式的置标语言。
   if (tag === 'math') {
     return 'math'
   }

@@ -3,21 +3,32 @@
 // 其实这个文件才是项目起点 。。。。
 // vueconfig util set del next-tick observable _base keepalive use mixin extend directives components filters的注册 ssr相关 版本号
 import Vue from 'core/index'
+// 引入全局配置功能
 import config from 'core/config'
+// 浅拷贝 和...rest
 import { extend, noop } from 'shared/util'
+// $mount的方法 创建真实dom 会触发 beforeMount  mounted 并监听
 import { mountComponent } from 'core/instance/lifecycle'
+// inBrowser && window.__VUE_DEVTOOLS_GLOBAL_HOOK__ ，  typeof window !== 'undefined'
 import { devtools, inBrowser } from 'core/util/index'
 
 import {
+  // 查询是否有节点的 string的就querySelect一下 没有就返回空div 报错
   query,
+  // 必须含有一些属性的标签校验
   mustUseProp,
+  // 是否是保留html标签
   isReservedTag,
+  // 是否是保留attr style  class
   isReservedAttr,
+  // 返回是否匹配 svg和mathML
   getTagNamespace,
+  // 不认识的html标签
   isUnknownElement
 } from 'web/util/index'
 
 import { patch } from './patch'
+// v-model  v-show
 import platformDirectives from './directives/index'
 import platformComponents from './components/index'
 
