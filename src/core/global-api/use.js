@@ -2,6 +2,7 @@
 
 import { toArray } from '../util/index'
 
+// 通过vue的_installedPlugins来管理所有的插件  已经安装的直接返回 没按转的判断plugin的格式 加入到里面
 export function initUse (Vue: GlobalAPI) {
   Vue.use = function (plugin: Function | Object) {
     const installedPlugins = (this._installedPlugins || (this._installedPlugins = []))
