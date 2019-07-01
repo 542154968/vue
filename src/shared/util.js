@@ -218,6 +218,7 @@ export const bind = Function.prototype.bind
 
 /**
  * Convert an Array-like object to a real Array.
+ * 类数组对象转为真实数组
  */
 export function toArray (list: any, start?: number): Array<any> {
   start = start || 0

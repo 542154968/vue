@@ -96,6 +96,7 @@ export function initGlobalAPI (Vue: GlobalAPI) {
   // 注册keepalive组件
   extend(Vue.options.components, builtInComponents)
 
+  // vue.use的实现逻辑
   initUse(Vue)
   initMixin(Vue)
   initExtend(Vue)
