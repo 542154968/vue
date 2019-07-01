@@ -2,13 +2,17 @@
 
 import { ASSET_TYPES } from 'shared/constants'
 import { defineComputed, proxy } from '../instance/state'
+// ../util/options
 import { extend, mergeOptions, validateComponentName } from '../util/index'
 
 export function initExtend (Vue: GlobalAPI) {
   /**
    * Each instance constructor, including Vue, has a unique
+   * 每个实例构造函数（包括Vue）都有一个
    * cid. This enables us to create wrapped "child
+   * CID。这使我们能够创建包装的“子级”
    * constructors" for prototypal inheritance and cache them.
+   * 用于原型继承和缓存的构造函数。
    */
   Vue.cid = 0
   let cid = 1
@@ -20,12 +24,15 @@ export function initExtend (Vue: GlobalAPI) {
     extendOptions = extendOptions || {}
     const Super = this
     const SuperId = Super.cid
+    // _Ctor干嘛的
     const cachedCtors = extendOptions._Ctor || (extendOptions._Ctor = {})
+    // 如果cachedCtors有superId了返回
     if (cachedCtors[SuperId]) {
       return cachedCtors[SuperId]
     }
 
     const name = extendOptions.name || Super.options.name
+    // 开发模式如果名字不符合规矩报错
     if (process.env.NODE_ENV !== 'production' && name) {
       validateComponentName(name)
     }
@@ -33,6 +40,7 @@ export function initExtend (Vue: GlobalAPI) {
     const Sub = function VueComponent (options) {
       this._init(options)
     }
+    // 利用空对象继承
     Sub.prototype = Object.create(Super.prototype)
     Sub.prototype.constructor = Sub
     Sub.cid = cid++
