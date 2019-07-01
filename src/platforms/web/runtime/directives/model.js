@@ -71,6 +71,7 @@ const directive = {
   },
 
   componentUpdated (el, binding, vnode) {
+    // 如果是select  设置选中
     if (vnode.tag === 'select') {
       setSelected(el, binding, vnode.context)
       // in case the options rendered by v-for have changed,
@@ -81,7 +82,9 @@ const directive = {
       const curOptions = el._vOptions = [].map.call(el.options, getValue)
       if (curOptions.some((o, i) => !looseEqual(o, prevOptions[i]))) {
         // trigger change event if
+        // 触发change事件如果
         // no matching option found for at least one value
+        // 没有匹配的option直到最后一个值
         const needReset = el.multiple
           ? binding.value.some(v => hasNoMatchingOption(v, curOptions))
           : binding.value !== binding.oldValue && hasNoMatchingOption(binding.value, curOptions)
