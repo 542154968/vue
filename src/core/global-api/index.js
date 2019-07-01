@@ -80,7 +80,9 @@ export function initGlobalAPI (Vue: GlobalAPI) {
     return obj
   }
 
+  // 初始化options
   Vue.options = Object.create(null)
+  // 一些周期 加入到options
   ASSET_TYPES.forEach(type => {
     Vue.options[type + 's'] = Object.create(null)
   })
@@ -89,6 +91,7 @@ export function initGlobalAPI (Vue: GlobalAPI) {
   // components with in Weex's multi-instance scenarios.
   Vue.options._base = Vue
 
+  // 注册keepalive组件
   extend(Vue.options.components, builtInComponents)
 
   initUse(Vue)
