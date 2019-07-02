@@ -7,14 +7,21 @@ import { RANGE_TOKEN, CHECKBOX_RADIO_TOKEN } from 'web/compiler/directives/model
 import { currentFlushTimestamp } from 'core/observer/scheduler'
 
 // normalize v-model event tokens that can only be determined at runtime.
+// 序列化 只能在运行时确定的 v-model 的事件
 // it's important to place the event as the first in the array because
+// 将事件作为数组中的第一个事件放置是很重要的，因为
 // the whole point is ensuring the v-model callback gets called before
+// 关键是确保V模型回调在 
 // user-attached handlers.
+// 用户附加的处理程序。 
 function normalizeEvents (on) {
   /* istanbul ignore if */
+  // 如果这个事件有值
   if (isDef(on[RANGE_TOKEN])) {
     // IE input[type=range] only supports `change` event
+    // 如果是IE 绑定change 不是IE 绑定input
     const event = isIE ? 'change' : 'input'
+    // 拷贝合并
     on[event] = [].concat(on[RANGE_TOKEN], on[event] || [])
     delete on[RANGE_TOKEN]
   }
