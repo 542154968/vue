@@ -132,6 +132,8 @@ export function parse (
     trimEndingWhitespace(element)
     // 前一个不存在并且不在队列
     if (!inVPre && !element.processed) {
+      // 调用processKey processKey调用 getBindingAttr
+      // getBindingAttr在 helpers  它又调用parseFilters。。。
       element = processElement(element, options)
     }
     // tree management
