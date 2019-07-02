@@ -34,6 +34,7 @@ import platformDirectives from './directives/index'
 import platformComponents from './components/index'
 
 // install platform specific utils
+// 给vueconfig添加一些方法
 Vue.config.mustUseProp = mustUseProp
 Vue.config.isReservedTag = isReservedTag
 Vue.config.isReservedAttr = isReservedAttr
@@ -42,7 +43,9 @@ Vue.config.isUnknownElement = isUnknownElement
 
 // install platform runtime directives & components
 // v-model  v-show
+// 给vue options 的全局指令加上 v-model v-show
 extend(Vue.options.directives, platformDirectives)
+// 给vue的全局组件加上transition和非抽象组件transition-group
 extend(Vue.options.components, platformComponents)
 
 // install platform patch function
