@@ -451,16 +451,20 @@ export function processElement (
   element: ASTElement,
   options: CompilerOptions
 ) {
+  // 获取key的真实值 
   processKey(element)
 
   // determine whether this is a plain element after
+  // 确定此元素在
   // removing structural attributes
+  // 删除结构属性
   element.plain = (
     !element.key &&
     !element.scopedSlots &&
     !element.attrsList.length
   )
-
+  
+  // 获取ref
   processRef(element)
   processSlotContent(element)
   processSlotOutlet(element)
@@ -473,15 +477,19 @@ export function processElement (
 }
 
 function processKey (el) {
+  // 获取key的值
   const exp = getBindingAttr(el, 'key')
+  // 如果key的值存在
   if (exp) {
     if (process.env.NODE_ENV !== 'production') {
+      // 是template  报错
       if (el.tag === 'template') {
         warn(
           `<template> cannot be keyed. Place the key on real elements instead.`,
           getRawBindingAttr(el, 'key')
         )
       }
+      // 如果是for  报错
       if (el.for) {
         const iterator = el.iterator2 || el.iterator1
         const parent = el.parent

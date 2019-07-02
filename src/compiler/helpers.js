@@ -158,7 +158,7 @@ export function getRawBindingAttr (
     el.rawAttrsMap[name]
 }
 
-// 获取bind 或: 的数据
+// 获取bind 或: 的数据 包含filter的
 export function getBindingAttr (
   el: ASTElement,
   name: string,
