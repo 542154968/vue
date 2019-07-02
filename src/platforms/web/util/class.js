@@ -6,7 +6,9 @@ export function genClassForVnode (vnode: VNodeWithData): string {
   let data = vnode.data
   let parentNode = vnode
   let childNode = vnode
+  // 如果有这个实例
   while (isDef(childNode.componentInstance)) {
+    // 给childNode赋值
     childNode = childNode.componentInstance._vnode
     if (childNode && childNode.data) {
       data = mergeClassData(childNode.data, data)
