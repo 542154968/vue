@@ -60,6 +60,7 @@ function updateAttrs (oldVnode: VNodeWithData, vnode: VNodeWithData) {
 }
 
 function setAttr (el: Element, key: string, value: any) {
+  // 如果含有-
   if (el.tagName.indexOf('-') > -1) {
     baseSetAttr(el, key, value)
   } else if (isBooleanAttr(key)) {
@@ -89,11 +90,14 @@ function setAttr (el: Element, key: string, value: any) {
 }
 
 function baseSetAttr (el, key, value) {
+  // 如果value是false或nulll 移除key
   if (isFalsyAttrValue(value)) {
     el.removeAttribute(key)
   } else {
     // #7138: IE10 & 11 fires input event when setting placeholder on
+    // IE10 11 或触发input事件在textarea设置placeholder的时候
     // <textarea>... block the first input event and remove the blocker
+    // 阻塞第一个input事件然后移除立即移除阻塞来解决
     // immediately.
     /* istanbul ignore if */
     if (
@@ -102,6 +106,7 @@ function baseSetAttr (el, key, value) {
       key === 'placeholder' && value !== '' && !el.__ieph
     ) {
       const blocker = e => {
+        // 阻止事件冒泡并且阻止相同事件的其他侦听器被调用。
         e.stopImmediatePropagation()
         el.removeEventListener('input', blocker)
       }
