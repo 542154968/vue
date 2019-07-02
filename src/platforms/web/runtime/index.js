@@ -49,10 +49,11 @@ extend(Vue.options.directives, platformDirectives)
 extend(Vue.options.components, platformComponents)
 
 // install platform patch function
+// path 虚拟DOM转真实dom
 Vue.prototype.__patch__ = inBrowser ? patch : noop
 
 // public mount method
-// 判断el是否存在 是不是浏览器环境
+// 判断el是否存在 是不是浏览器环境 执行mounted和beforemount周期
 Vue.prototype.$mount = function (
   el?: string | Element,
   // 保湿 干嘛的？？ 和服务端渲染有关
@@ -64,9 +65,13 @@ Vue.prototype.$mount = function (
 
 // devtools global hook
 /* istanbul ignore next */
+// devtools的提示
 if (inBrowser) {
+  // 等到别的任务结束后  宏任务
   setTimeout(() => {
+    // 如果devtools在
     if (config.devtools) {
+      // 触发init
       if (devtools) {
         devtools.emit('init', Vue)
       } else if (
