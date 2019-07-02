@@ -11,6 +11,7 @@ import { isIE, isEdge, isServerRendering } from 'core/util/env'
 import {
   addProp,
   addAttr,
+  // console.error(`[Vue compiler]: ${msg}`)
   baseWarn,
   addHandler,
   addDirective,
@@ -77,26 +78,40 @@ export function createASTElement (
  * Convert HTML string to AST.
  */
 // 开始接触AST
+// AST 元素节点总共有 3 种类型，type 为 1 表示是普通元素，为 2 表示是表达式，为 3 表示是纯文本。
 export function parse (
   template: string,
   options: CompilerOptions
 ): ASTElement | void {
+  // 警告信息
   warn = options.warn || baseWarn
 
+  // no => false
+  // 是 pre Tag
   platformIsPreTag = options.isPreTag || no
+  // 必须使用prop
   platformMustUseProp = options.mustUseProp || no
+  // 获取tag的nameSpace
   platformGetTagNamespace = options.getTagNamespace || no
+  // 是否是html或svg标签
   const isReservedTag = options.isReservedTag || no
+  // src/plateforms/web/util/element isHTMLTag(tag) || isSVG(tag)
   maybeComponent = (el: ASTElement) => !!el.component || !isReservedTag(el.tag)
 
+  // 返回空数组 或 m[transformNode]的值
   transforms = pluckModuleFunction(options.modules, 'transformNode')
+  // 返回空数组 或 m[preTransformNode]的值
   preTransforms = pluckModuleFunction(options.modules, 'preTransformNode')
+  // 返回空数组 或 m[postTransformNode]的值
   postTransforms = pluckModuleFunction(options.modules, 'postTransformNode')
 
+  // 分隔符;界符;定界符;分界符号;分界字元
   delimiters = options.delimiters
 
   const stack = []
+  // 保留空白
   const preserveWhitespace = options.preserveWhitespace !== false
+  // 空白
   const whitespaceOption = options.whitespace
   let root
   let currentParent
@@ -104,6 +119,7 @@ export function parse (
   let inPre = false
   let warned = false
 
+  // 只警告一次 如果已经warned了 让标识 false
   function warnOnce (msg, range) {
     if (!warned) {
       warned = true
@@ -112,7 +128,9 @@ export function parse (
   }
 
   function closeElement (element) {
+    // 清除尾部空白节点
     trimEndingWhitespace(element)
+    // 前一个不存在并且不在队列
     if (!inVPre && !element.processed) {
       element = processElement(element, options)
     }

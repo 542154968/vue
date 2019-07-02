@@ -158,6 +158,7 @@ export function getRawBindingAttr (
     el.rawAttrsMap[name]
 }
 
+// 获取bind 或: 的数据
 export function getBindingAttr (
   el: ASTElement,
   name: string,
@@ -177,9 +178,13 @@ export function getBindingAttr (
 }
 
 // note: this only removes the attr from the Array (attrsList) so that it
+// 注意：这只会从数组（attrslist）中删除attr，以便
 // doesn't get processed by processAttrs.
+// 没有被processAttrs处理。
 // By default it does NOT remove it from the map (attrsMap) because the map is
+// 默认情况下，它不会将其从映射（attrsmap）中移除，因为映射是
 // needed during codegen.
+// 在codegen期间需要。
 export function getAndRemoveAttr (
   el: ASTElement,
   name: string,

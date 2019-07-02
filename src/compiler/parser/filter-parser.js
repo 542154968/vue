@@ -3,13 +3,21 @@
 const validDivisionCharRE = /[\w).+\-_$\]]/
 
 export function parseFilters (exp: string): string {
+  // 单引号
   let inSingle = false
+  // 双引号
   let inDouble = false
+  // template字符串
   let inTemplateString = false
+  // 正则
   let inRegex = false
+  // 有鬈发(或毛)的;拳曲状的 ？
   let curly = 0
+  // 正方形
   let square = 0
+  // 括号
   let paren = 0
+  // 最后一个过滤的下标
   let lastFilterIndex = 0
   let c, prev, i, expression, filters
 
