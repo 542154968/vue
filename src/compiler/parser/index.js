@@ -23,6 +23,7 @@ import {
 } from '../helpers'
 
 export const onRE = /^@|^v-on:/
+// feature-flags.js  false
 export const dirRE = process.env.VBIND_PROP_SHORTHAND
   ? /^v-|^@|^:|^\.|^#/
   : /^v-|^@|^:|^#/
@@ -793,15 +794,26 @@ function processComponent (el) {
 }
 
 function processAttrs (el) {
+  /*
+   *export const dirRE = process.env.VBIND_PROP_SHORTHAND
+    ? /^v-|^@|^:|^\.|^#/
+    : /^v-|^@|^:|^#/
+   */
+
   const list = el.attrsList
   let i, l, name, rawName, value, modifiers, syncGen, isDynamic
   for (i = 0, l = list.length; i < l; i++) {
+    // 获取attr的name
     name = rawName = list[i].name
+    // 获取attr的value
     value = list[i].value
+    // 正则匹配
     if (dirRE.test(name)) {
+      // 动态element？
       // mark element as dynamic
       el.hasBindings = true
       // modifiers
+      // 获取修饰符  返回{native: true, stop: true}这种形式
       modifiers = parseModifiers(name.replace(dirRE, ''))
       // support .foo shorthand syntax for the .prop modifier
       if (process.env.VBIND_PROP_SHORTHAND && propBindRE.test(name)) {
@@ -940,11 +952,14 @@ function checkInFor (el: ASTElement): boolean {
   return false
 }
 
+// 解析修饰符 '@click.native'.match(/\.[^.\]]+(?=[^\]]*$)/g) =》 ['.native']
 function parseModifiers (name: string): Object | void {
+  // ModifierRE /\.[^.\]]+(?=[^\]]*$)/g
   const match = name.match(modifierRE)
   if (match) {
     const ret = {}
     match.forEach(m => { ret[m.slice(1)] = true })
+    // ret => {native: true}
     return ret
   }
 }
