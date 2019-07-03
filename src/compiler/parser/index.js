@@ -844,7 +844,7 @@ function processAttrs (el) {
         if (isDynamic) {
           name = name.slice(1, -1)
         }
-        // 如果value是空的
+        // 如果value是空的 报错
         if (
           process.env.NODE_ENV !== 'production' &&
           value.trim().length === 0
@@ -853,11 +853,16 @@ function processAttrs (el) {
             `The value for a v-bind expression cannot be empty. Found in "v-bind:${name}"`
           )
         }
+        // 如果修饰符存在
         if (modifiers) {
+          // 如果porp存在并且是非动态的
           if (modifiers.prop && !isDynamic) {
+            // 将含有-的name转成驼峰
             name = camelize(name)
+            // 特殊处理innerHTML
             if (name === 'innerHtml') name = 'innerHTML'
           }
+          // 如果caml修饰符存在 转成驼峰
           if (modifiers.camel && !isDynamic) {
             name = camelize(name)
           }

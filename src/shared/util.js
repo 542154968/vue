@@ -164,6 +164,8 @@ export function cached<F: Function>(fn: F): F {
 
 /**
  * Camelize a hyphen-delimited string.
+ * camelize ('abc-efd') "abcEfd"
+ * 将横线转驼峰并缓存
  */
 const camelizeRE = /-(\w)/g
 export const camelize = cached((str: string): string => {
