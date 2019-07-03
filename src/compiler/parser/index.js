@@ -24,6 +24,7 @@ import {
 
 export const onRE = /^@|^v-on:/
 // feature-flags.js  false
+// v-bind prop 是否使用缩写
 export const dirRE = process.env.VBIND_PROP_SHORTHAND
   ? /^v-|^@|^:|^\.|^#/
   : /^v-|^@|^:|^#/
@@ -816,10 +817,16 @@ function processAttrs (el) {
       // 获取修饰符  返回{native: true, stop: true}这种形式
       modifiers = parseModifiers(name.replace(dirRE, ''))
       // support .foo shorthand syntax for the .prop modifier
+      // /^\./ 匹配已.开头的 
+      // v-bind prop 使用缩写的话
       if (process.env.VBIND_PROP_SHORTHAND && propBindRE.test(name)) {
+        // 给当前的的指令列表加上prop
+        // .prop  被用于绑定 DOM 属性 (property)
         (modifiers || (modifiers = {})).prop = true
+        // /\.[^.\]]+(?=[^\]]*$)/g 清除name的修饰符
         name = `.` + name.slice(1).replace(modifierRE, '')
       } else if (modifiers) {
+        // 如果没有 .prop 就直接清除name的修饰符
         name = name.replace(modifierRE, '')
       }
       if (bindRE.test(name)) { // v-bind
