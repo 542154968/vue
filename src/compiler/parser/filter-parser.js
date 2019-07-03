@@ -12,6 +12,8 @@ const validDivisionCharRE = /[\w).+\-_$\]]/
  *  说明这不是第一个过滤器 pushFilter() 去处理上一个过滤器
  */
 // 表达式中的过滤器解析 方法
+// parseFilters("name") =》 "name"
+// parseFilters("name | filter | filters" ) "_f("filters")(_f("filter")(name))"
 export function parseFilters (exp: string): string {
    // 是否在 ''中
   let inSingle = false
@@ -110,7 +112,7 @@ export function parseFilters (exp: string): string {
     (filters || (filters = [])).push(exp.slice(lastFilterIndex, i).trim())
     lastFilterIndex = i + 1
   }
-
+  // 如果存在过滤器
   if (filters) {
     for (i = 0; i < filters.length; i++) {
       expression = wrapFilter(expression, filters[i])

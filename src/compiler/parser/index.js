@@ -464,10 +464,13 @@ export function processElement (
     !element.attrsList.length
   )
   
-  // 获取ref
+  // 获取ref 移除ref在真实DOM上的显示
   processRef(element)
+  // slot的获取 提示使用新语法 移除slot在真实dom上的显示
   processSlotContent(element)
+  // 获取slot的name 并删除slot 避免在真实dom上显示
   processSlotOutlet(element)
+  // is  inline-template的设置
   processComponent(element)
   for (let i = 0; i < transforms.length; i++) {
     element = transforms[i](element, options) || element
@@ -628,6 +631,7 @@ function processOnce (el) {
 function processSlotContent (el) {
   let slotScope
   if (el.tag === 'template') {
+    // 获取scope的值并移除这个属性 不在真实DOM上显示
     slotScope = getAndRemoveAttr(el, 'scope')
     /* istanbul ignore if */
     if (process.env.NODE_ENV !== 'production' && slotScope) {
@@ -760,8 +764,10 @@ function getSlotName (binding) {
 }
 
 // handle <slot/> outlets
+// 获取slot的name
 function processSlotOutlet (el) {
   if (el.tag === 'slot') {
+    // 获取slot的name 并删除slot 避免在真实dom上显示
     el.slotName = getBindingAttr(el, 'name')
     if (process.env.NODE_ENV !== 'production' && el.key) {
       warn(
@@ -776,9 +782,11 @@ function processSlotOutlet (el) {
 
 function processComponent (el) {
   let binding
+  // 如果is存在 那么binding等于 is的值 获取is的值 删除is在
   if ((binding = getBindingAttr(el, 'is'))) {
     el.component = binding
   }
+  // 如果inlie-template存在  内联模板 设置内联模板
   if (getAndRemoveAttr(el, 'inline-template') != null) {
     el.inlineTemplate = true
   }

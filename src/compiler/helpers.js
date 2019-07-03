@@ -172,6 +172,7 @@ export function getBindingAttr (
     // parseFilters没看懂干嘛的
     // 表达式中的过滤器解析 方法
     // 将属性的值从前往后开始一个一个匹配，关键符号 : "|" 并排除 ""、 ''、 ``、 //、 || (字符串、正则)中的管道符号 '|' 
+    // 如果含有过滤器 转化成parseFilters("name | filter | filters" ) "_f("filters")(_f("filter")(name))" _f函数
     return parseFilters(dynamicValue)
   } else if (getStatic !== false) {
     const staticValue = getAndRemoveAttr(el, name)
