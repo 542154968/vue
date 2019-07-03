@@ -814,7 +814,9 @@ function processAttrs (el) {
       // mark element as dynamic
       el.hasBindings = true
       // modifiers
-      // 获取修饰符  返回{native: true, stop: true}这种形式
+      // 获取修饰符 去除v- @ : . # 之类的 
+      // 返回{native: true, stop: true}这种形式
+
       modifiers = parseModifiers(name.replace(dirRE, ''))
       // support .foo shorthand syntax for the .prop modifier
       // /^\./ 匹配已.开头的 
@@ -829,13 +831,20 @@ function processAttrs (el) {
         // 如果没有 .prop 就直接清除name的修饰符
         name = name.replace(modifierRE, '')
       }
+      // /^:|^\.|^v-bind:/  v-bind的处理
       if (bindRE.test(name)) { // v-bind
+        // 删除v-bind
         name = name.replace(bindRE, '')
+        // 获取value值 有filte 是个_f('') 没有就是值
         value = parseFilters(value)
+        // /^\[.*\]$/ 是否是动态的匹配 【】里面的
         isDynamic = dynamicArgRE.test(name)
+        // 如果是动态的 去除首尾[ ] v-bind:[arg] 2.6.0+ 动态参数名
+
         if (isDynamic) {
           name = name.slice(1, -1)
         }
+        // 如果value是空的
         if (
           process.env.NODE_ENV !== 'production' &&
           value.trim().length === 0
