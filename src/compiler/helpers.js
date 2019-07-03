@@ -76,6 +76,7 @@ export function addHandler (
   range?: Range,
   dynamic?: boolean
 ) {
+  // 修饰符 {native: true}
   modifiers = modifiers || emptyObject
   // warn prevent and passive modifier
   /* istanbul ignore if */
@@ -83,6 +84,7 @@ export function addHandler (
     process.env.NODE_ENV !== 'production' && warn &&
     modifiers.prevent && modifiers.passive
   ) {
+    // passive 会告诉浏览器你不想阻止事件的默认行为  所以和prevent不能一起用
     warn(
       'passive and prevent can\'t be used together. ' +
       'Passive handler can\'t prevent default event.',
@@ -91,33 +93,59 @@ export function addHandler (
   }
 
   // normalize click.right and click.middle since they don't actually fire
+  // 规范化click.right和click.middle，因为它们实际上不触发
   // this is technically browser-specific, but at least for now browsers are
+  // /这在技术上是特定于浏览器的，但至少现在浏览器是
   // the only target envs that have right/middle clicks.
+  // 只有右键/中键单击的目标env。
+
+  // 如果right
   if (modifiers.right) {
+    // 如果是动态的
     if (dynamic) {
+      // 如果name是click 那改为右键菜单名字 不然就是name
       name = `(${name})==='click'?'contextmenu':(${name})`
+      // 如果不是动态的 如果name是click
     } else if (name === 'click') {
+      // name改为contextMenu
       name = 'contextmenu'
+      // 从修饰符对象中删除右键指令
       delete modifiers.right
     }
+    // 如果是中间
   } else if (modifiers.middle) {
+    // 如果是动态的
     if (dynamic) {
+      // 是click  监听mouseup 不是就是自定义name
       name = `(${name})==='click'?'mouseup':(${name})`
+      // 不是动态的 就是mouseup
     } else if (name === 'click') {
       name = 'mouseup'
     }
   }
 
   // check capture modifier
+  // 是否使用捕获模式
+  /**
+   * dynamic
+    ? `_p(${name},"${symbol}")`
+    : symbol + name // mark t
+   */
   if (modifiers.capture) {
     delete modifiers.capture
+    // symbol  name dynamic
+    // 如果是抽象的 返回 `_p(${name},"!")` 非抽象的返回 '!'+name
     name = prependModifierMarker('!', name, dynamic)
   }
+  // 如果是once操作符
+  // 如果是抽象的 返回 `_p(${name},"~")` 非抽象的返回 '~'+name
   if (modifiers.once) {
     delete modifiers.once
     name = prependModifierMarker('~', name, dynamic)
   }
   /* istanbul ignore if */
+  // 如果是passive操作符
+  // 如果是抽象的 返回 `_p(${name},"&")` 非抽象的返回 '&'+name
   if (modifiers.passive) {
     delete modifiers.passive
     name = prependModifierMarker('&', name, dynamic)
