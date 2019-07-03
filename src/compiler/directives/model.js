@@ -32,15 +32,21 @@ export function genComponentModel (
 
 /**
  * Cross-platform codegen helper for generating v-model value assignment code.
+ * 跨平台代码生成助手 为了 生成 v-model 值 工作分配代码
  */
 export function genAssignmentCode (
   value: string,
+  // 分配 工作 任务
   assignment: string
 ): string {
+  // 转化为 {exp: "sfsf.sfsf", key: ""sfsdf""}
   const res = parseModel(value)
+  // 如果key不存在
   if (res.key === null) {
+    // sdfsfd = '$event'
     return `${value}=${assignment}`
   } else {
+    // 存在的话 $set(‘sdfsfd’ , ‘sfsdf’,'$event')
     return `$set(${res.exp}, ${res.key}, ${assignment})`
   }
 }
@@ -67,14 +73,20 @@ type ModelParseResult = {
   key: string | null
 }
 
+// parseModel ("sfsf.sfsf.sfsdf") {exp: "sfsf.sfsf", key: ""sfsdf""}
 export function parseModel (val: string): ModelParseResult {
   // Fix https://github.com/vuejs/vue/pull/7730
   // allow v-model="obj.val " (trailing whitespace)
+  // 允许有首位空格
   val = val.trim()
+  // 获取长度
   len = val.length
-
+  
+  //  如果不存在[ 或者最后一个不是]
   if (val.indexOf('[') < 0 || val.lastIndexOf(']') < len - 1) {
+    // 获取最后一个 .
     index = val.lastIndexOf('.')
+    // 如果存在
     if (index > -1) {
       return {
         exp: val.slice(0, index),

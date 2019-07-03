@@ -862,12 +862,16 @@ function processAttrs (el) {
             // 特殊处理innerHTML
             if (name === 'innerHtml') name = 'innerHTML'
           }
-          // 如果caml修饰符存在 转成驼峰
+          // 如果caml修饰符存在 并且不是抽象的 转成驼峰 
           if (modifiers.camel && !isDynamic) {
             name = camelize(name)
           }
+          // 如果存在sync修饰符
           if (modifiers.sync) {
+            // 返回的是一个字符串 如果value ===  'id' 返回的是 id = '$event' 
+            // 如果value === 'searchBody.name' 返回的是 $set('searchBody', 'name', '$event' )
             syncGen = genAssignmentCode(value, `$event`)
+            // 如果不是动态的
             if (!isDynamic) {
               addHandler(
                 el,
