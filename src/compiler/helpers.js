@@ -152,21 +152,29 @@ export function addHandler (
   }
 
   let events
+  // 如果含有native
   if (modifiers.native) {
+    // 设置events
     delete modifiers.native
     events = el.nativeEvents || (el.nativeEvents = {})
   } else {
     events = el.events || (el.events = {})
   }
 
+  // item range  给这个对象加上start和end
+  // 返回一个对象 {value, dynamic, start, end}
   const newHandler: any = rangeSetItem({ value: value.trim(), dynamic }, range)
+  // 如果操作符存在 赋值上去
   if (modifiers !== emptyObject) {
     newHandler.modifiers = modifiers
   }
 
   const handlers = events[name]
   /* istanbul ignore if */
+  // 如果值是数组
   if (Array.isArray(handlers)) {
+    // important 是神马玩意 权重？？  
+    // 权重高  加到前面  低 加到后面
     important ? handlers.unshift(newHandler) : handlers.push(newHandler)
   } else if (handlers) {
     events[name] = important ? [newHandler, handlers] : [handlers, newHandler]
