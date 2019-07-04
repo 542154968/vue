@@ -873,6 +873,7 @@ function processAttrs (el) {
             syncGen = genAssignmentCode(value, `$event`)
             // 如果不是动态的
             if (!isDynamic) {
+              // 给el加个事件
               addHandler(
                 el,
                 `update:${camelize(name)}`,
@@ -882,6 +883,8 @@ function processAttrs (el) {
                 warn,
                 list[i]
               )
+              // 大写转驼峰 camelize匹配的是小写的  hyphenate匹配的是大写的
+              // 如果名称不一致 再加一个
               if (hyphenate(name) !== camelize(name)) {
                 addHandler(
                   el,
@@ -908,6 +911,7 @@ function processAttrs (el) {
             }
           }
         }
+        // 如果prop操作符在  或者 不是组件 并且 必须使用prop？ 不是options.mustuseProp么 咋又变成方法啦？
         if ((modifiers && modifiers.prop) || (
           !el.component && platformMustUseProp(el.tag, el.attrsMap.type, name)
         )) {
