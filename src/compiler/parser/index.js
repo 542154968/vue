@@ -915,20 +915,29 @@ function processAttrs (el) {
         if ((modifiers && modifiers.prop) || (
           !el.component && platformMustUseProp(el.tag, el.attrsMap.type, name)
         )) {
+          // 给el.props[]加 {name, value, start: list[i].start, end: list[i].end, dynamic: isDynamic}
           addProp(el, name, value, list[i], isDynamic)
         } else {
+          // 没有prop  给 加到el.attrs上
           addAttr(el, name, value, list[i], isDynamic)
         }
+        // /^@|^v-on:/
       } else if (onRE.test(name)) { // v-on
+        // 过滤掉v-on
         name = name.replace(onRE, '')
+        // 是否是动态的
         isDynamic = dynamicArgRE.test(name)
+        // 如果是动态的  去除首位
         if (isDynamic) {
           name = name.slice(1, -1)
         }
+        // 添加事件
         addHandler(el, name, value, modifiers, false, warn, list[i], isDynamic)
+        // 指令的添加
       } else { // normal directives
+        // 
         name = name.replace(dirRE, '')
-        // parse arg
+        // parse arg /:(.*)$/
         const argMatch = name.match(argRE)
         let arg = argMatch && argMatch[1]
         isDynamic = false
