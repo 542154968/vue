@@ -23,6 +23,7 @@ export const createCompiler = createCompilerCreator(function baseCompile (
     // 大概就是将语法树变成常量缓存下来 猜测的
     optimize(ast, options)
   }
+  // 处理v-if v-for once children  slot等
   const code = generate(ast, options)
   return {
     ast,

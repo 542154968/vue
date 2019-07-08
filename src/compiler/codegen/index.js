@@ -647,6 +647,7 @@ function genSlot (el: ASTElement, state: CodegenState): string {
 }
 
 // componentName is el.component, take it as argument to shun flow's pessimistic refinement
+// 组件名为el.component，以它为参数避免流的悲观优化
 function genComponent (
   componentName: string,
   el: ASTElement,

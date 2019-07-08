@@ -75,6 +75,7 @@ Vue.prototype.$mount = function (
       }
       // src/compiler/index
       // compileToFunctions ./compiler/index -》createCompiler =》src/compiler/index =》 createCompilerCreator
+      // 转为function字符串
       const { render, staticRenderFns } = compileToFunctions(template, {
         outputSourceRange: process.env.NODE_ENV !== 'production',
         shouldDecodeNewlines,
