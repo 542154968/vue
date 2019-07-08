@@ -380,6 +380,7 @@ function genDirectives (el: ASTElement, state: CodegenState): string | void {
   }
 }
 
+// inline-template的处理
 function genInlineTemplate (el: ASTElement, state: CodegenState): ?string {
   const ast = el.children[0]
   if (process.env.NODE_ENV !== 'production' && (
@@ -400,46 +401,66 @@ function genInlineTemplate (el: ASTElement, state: CodegenState): ?string {
   }
 }
 
+// scope slots
 function genScopedSlots (
   el: ASTElement,
   slots: { [key: string]: ASTElement },
   state: CodegenState
 ): string {
   // by default scoped slots are considered "stable", this allows child
+  // 默认情况下，作用域插槽被视为“稳定”，这允许子
   // components with only scoped slots to skip forced updates from parent.
+  // 仅具有作用域槽的组件，以跳过父级的强制更新。
   // but in some cases we have to bail-out of this optimization
+  // 但在某些情况下，我们必须摆脱这种优化
   // for example if the slot contains dynamic names, has v-if or v-for on them...
+  // 例如，如果插槽中包含动态名称，则其上有v-if或v-for…
+
   let needsForceUpdate = el.for || Object.keys(slots).some(key => {
     const slot = slots[key]
     return (
       slot.slotTargetDynamic ||
       slot.if ||
       slot.for ||
+      // 正在从可能是动态的父级传递槽
       containsSlotChild(slot) // is passing down slot from parent which may be dynamic
     )
   })
 
   // #9534: if a component with scoped slots is inside a conditional branch,
+  // 如果带范围插槽的组件位于条件分支内，
   // it's possible for the same component to be reused but with different
+  // 可以重复使用同一组件，但使用不同的组件
   // compiled slot content. To avoid that, we generate a unique key based on
+  // 编译的槽内容。为了避免这种情况，我们根据
   // the generated code of all the slot contents.
+  // 所有slot内容生成的代码。
   let needsKey = !!el.if
 
   // OR when it is inside another scoped slot or v-for (the reactivity may be
+  // 或者当它在另一个作用域槽或V-for（反应性可能是
   // disconnected due to the intermediate scope variable)
+  // 由于中间作用域变量而断开连接）
   // #9438, #9506
   // TODO: this can be further optimized by properly analyzing in-scope bindings
+  // TODO:通过正确分析作用域内绑定，可以进一步优化这一点
   // and skip force updating ones that do not actually use scope variables.
+  // 并跳过强制更新那些实际上不使用范围变量的。
+  
+  // 如果不需要更新
   if (!needsForceUpdate) {
     let parent = el.parent
     while (parent) {
+      // 如果父的slot不是空的 或者父有for
       if (
         (parent.slotScope && parent.slotScope !== emptySlotScopeToken) ||
         parent.for
+        // 改为需要update
       ) {
         needsForceUpdate = true
         break
       }
+      // 如果parent有if  
       if (parent.if) {
         needsKey = true
       }
@@ -447,6 +468,7 @@ function genScopedSlots (
     }
   }
 
+  // 转化为字符串 将slot
   const generatedSlots = Object.keys(slots)
     .map(key => genScopedSlot(slots[key], state))
     .join(',')
