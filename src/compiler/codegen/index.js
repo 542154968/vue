@@ -210,6 +210,7 @@ function genIfConditions (
   }
 }
 
+// v-for 的处理
 export function genFor (
   el: any,
   state: CodegenState,
@@ -218,9 +219,11 @@ export function genFor (
 ): string {
   const exp = el.for
   const alias = el.alias
+  // 
   const iterator1 = el.iterator1 ? `,${el.iterator1}` : ''
   const iterator2 = el.iterator2 ? `,${el.iterator2}` : ''
 
+  // 真实组件如果没有key  报错
   if (process.env.NODE_ENV !== 'production' &&
     state.maybeComponent(el) &&
     el.tag !== 'slot' &&
@@ -236,6 +239,7 @@ export function genFor (
     )
   }
 
+  // for循环的标识  避免
   el.forProcessed = true // avoid recursion
   return `${altHelper || '_l'}((${exp}),` +
     `function(${alias}${iterator1}${iterator2}){` +
