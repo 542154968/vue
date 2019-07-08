@@ -480,6 +480,7 @@ function genScopedSlots (
   })`
 }
 
+// hash？ 转成数字hash
 function hash(str) {
   let hash = 5381
   let i = str.length
@@ -489,6 +490,7 @@ function hash(str) {
   return hash >>> 0
 }
 
+// 判断是否slot
 function containsSlotChild (el: ASTNode): boolean {
   if (el.type === 1) {
     if (el.tag === 'slot') {
@@ -499,14 +501,17 @@ function containsSlotChild (el: ASTNode): boolean {
   return false
 }
 
+// 单个的slot
 function genScopedSlot (
   el: ASTElement,
   state: CodegenState
 ): string {
   const isLegacySyntax = el.attrsMap['slot-scope']
+  // 如果if存在 
   if (el.if && !el.ifProcessed && !isLegacySyntax) {
     return genIf(el, state, genScopedSlot, `null`)
   }
+  // 如果是for的
   if (el.for && !el.forProcessed) {
     return genFor(el, state, genScopedSlot)
   }
@@ -525,6 +530,7 @@ function genScopedSlot (
   return `{key:${el.slotTarget || `"default"`},fn:${fn}${reverseProxy}}`
 }
 
+// children的转化
 export function genChildren (
   el: ASTElement,
   state: CodegenState,
@@ -557,9 +563,14 @@ export function genChildren (
 }
 
 // determine the normalization needed for the children array.
+// 确定子数组所需的规范化
 // 0: no normalization needed
+// 0:不需要规范化
 // 1: simple normalization needed (possible 1-level deep nested array)
+// 1:需要简单的规范化（可能是一级深嵌套数组）
 // 2: full normalization needed
+// 2:需要完全规范化
+
 function getNormalizationType (
   children: Array<ASTNode>,
   maybeComponent: (el: ASTElement) => boolean
@@ -570,11 +581,13 @@ function getNormalizationType (
     if (el.type !== 1) {
       continue
     }
+    // 如果是template slot for不存在 用 2
     if (needsNormalization(el) ||
         (el.ifConditions && el.ifConditions.some(c => needsNormalization(c.block)))) {
       res = 2
       break
     }
+    
     if (maybeComponent(el) ||
         (el.ifConditions && el.ifConditions.some(c => maybeComponent(c.block)))) {
       res = 1
