@@ -24,10 +24,15 @@ export class CodegenState {
   constructor (options: CompilerOptions) {
     this.options = options
     this.warn = options.warn || baseWarn
+    // 获取并拷贝每个 moduls[transformCode]的值
     this.transforms = pluckModuleFunction(options.modules, 'transformCode')
+    // 获取并拷贝每个 moduls[genData]的值
     this.dataGenFns = pluckModuleFunction(options.modules, 'genData')
+    // 获取指令
     this.directives = extend(extend({}, baseDirectives), options.directives)
+    // 
     const isReservedTag = options.isReservedTag || no
+    // 
     this.maybeComponent = (el: ASTElement) => !!el.component || !isReservedTag(el.tag)
     this.onceId = 0
     this.staticRenderFns = []
@@ -44,7 +49,9 @@ export function generate (
   ast: ASTElement | void,
   options: CompilerOptions
 ): CodegenResult {
+  // 初始化？
   const state = new CodegenState(options)
+  // 
   const code = ast ? genElement(ast, state) : '_c("div")'
   return {
     render: `with(this){return ${code}}`,
@@ -53,11 +60,14 @@ export function generate (
 }
 
 export function genElement (el: ASTElement, state: CodegenState): string {
+  // 如果有父
+  // 获取pre
   if (el.parent) {
     el.pre = el.pre || el.parent.pre
   }
-
+  // 如果有静态根节点 并且 没有处理过返回
   if (el.staticRoot && !el.staticProcessed) {
+    // 返回的是个字符串 _m 用来eval执行的吧
     return genStatic(el, state)
   } else if (el.once && !el.onceProcessed) {
     return genOnce(el, state)
@@ -96,17 +106,25 @@ export function genElement (el: ASTElement, state: CodegenState): string {
 }
 
 // hoist static sub-trees out
+// 提升静态子树
 function genStatic (el: ASTElement, state: CodegenState): string {
   el.staticProcessed = true
   // Some elements (templates) need to behave differently inside of a v-pre
+  // 一些元素（模板）在v-pre中的行为需要不同 
   // node.  All pre nodes are static roots, so we can use this as a location to
+  // 腿。所有pre节点都是静态根，因此我们可以将其用作 
   // wrap a state change and reset it upon exiting the pre node.
+  // 包装状态更改，并在退出pre节点时重置它。
+
   const originalPreState = state.pre
   if (el.pre) {
     state.pre = el.pre
   }
+  // ？？？ 又调用回去了？？
   state.staticRenderFns.push(`with(this){return ${genElement(el, state)}}`)
+  // ？？？
   state.pre = originalPreState
+  // 返回一个字符串
   return `_m(${
     state.staticRenderFns.length - 1
   }${
@@ -117,10 +135,13 @@ function genStatic (el: ASTElement, state: CodegenState): string {
 // v-once
 function genOnce (el: ASTElement, state: CodegenState): string {
   el.onceProcessed = true
+  // 如果if存在 并且 ifProcessed是false
   if (el.if && !el.ifProcessed) {
     return genIf(el, state)
+    // 如果
   } else if (el.staticInFor) {
     let key = ''
+    // 获取最高的parent
     let parent = el.parent
     while (parent) {
       if (parent.for) {
@@ -129,6 +150,7 @@ function genOnce (el: ASTElement, state: CodegenState): string {
       }
       parent = parent.parent
     }
+    // 如果key不存在 
     if (!key) {
       process.env.NODE_ENV !== 'production' && state.warn(
         `v-once can only be used inside v-for that is keyed. `,
@@ -136,22 +158,27 @@ function genOnce (el: ASTElement, state: CodegenState): string {
       )
       return genElement(el, state)
     }
+    // 
     return `_o(${genElement(el, state)},${state.onceId++},${key})`
   } else {
     return genStatic(el, state)
   }
 }
 
+// v-if的处理？
 export function genIf (
   el: any,
   state: CodegenState,
   altGen?: Function,
   altEmpty?: string
 ): string {
+  // 避免递归
   el.ifProcessed = true // avoid recursion
+  // 返回字符串方法  包含 v-if 和v-once的处理
   return genIfConditions(el.ifConditions.slice(), state, altGen, altEmpty)
 }
 
+// 
 function genIfConditions (
   conditions: ASTIfConditions,
   state: CodegenState,

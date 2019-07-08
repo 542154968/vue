@@ -20,6 +20,7 @@ export const createCompiler = createCompilerCreator(function baseCompile (
   // ./parser/index  
   const ast = parse(template.trim(), options)
   if (options.optimize !== false) {
+    // 大概就是将语法树变成常量缓存下来 猜测的
     optimize(ast, options)
   }
   const code = generate(ast, options)
