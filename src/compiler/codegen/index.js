@@ -247,10 +247,12 @@ export function genFor (
     '})'
 }
 
+// data的处理
 export function genData (el: ASTElement, state: CodegenState): string {
   let data = '{'
 
   // directives first.
+  // 指令在生成前可能会改变el的其他属性
   // directives may mutate the el's other properties before they are generated.
   const dirs = genDirectives(el, state)
   if (dirs) data += dirs + ','
@@ -271,22 +273,27 @@ export function genData (el: ASTElement, state: CodegenState): string {
     data += `pre:true,`
   }
   // record original tag name for components using "is" attribute
+  // 使用“is”属性记录组件的原始标记名
   if (el.component) {
     data += `tag:"${el.tag}",`
   }
   // module data generation functions
+  // 模块数据生成功能
   for (let i = 0; i < state.dataGenFns.length; i++) {
     data += state.dataGenFns[i](el)
   }
   // attributes
+  // 属性 attr
   if (el.attrs) {
     data += `attrs:${genProps(el.attrs)},`
   }
   // DOM props
+  // 属性 property
   if (el.props) {
     data += `domProps:${genProps(el.props)},`
   }
   // event handlers
+  // 获取事件
   if (el.events) {
     data += `${genHandlers(el.events, false)},`
   }
@@ -321,7 +328,9 @@ export function genData (el: ASTElement, state: CodegenState): string {
   }
   data = data.replace(/,$/, '') + '}'
   // v-bind dynamic argument wrap
+  // v-bind 动态参数包装
   // v-bind with dynamic arguments must be applied using the same v-bind object
+  // 必须使用同一个v-bind对象应用带有动态参数的v-bind 
   // merge helper so that class/style/mustUseProp attrs are handled correctly.
   if (el.dynamicAttrs) {
     data = `_b(${data},"${el.tag}",${genProps(el.dynamicAttrs)})`

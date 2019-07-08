@@ -56,11 +56,14 @@ export function genHandlers (
   events: ASTElementHandlers,
   isNative: boolean
 ): string {
+  // 是否是natvie事件
   const prefix = isNative ? 'nativeOn:' : 'on:'
   let staticHandlers = ``
   let dynamicHandlers = ``
   for (const name in events) {
+    // 返回一个字符串 字符串内容是 方法
     const handlerCode = genHandler(events[name])
+    // 如果是虚拟的
     if (events[name] && events[name].dynamic) {
       dynamicHandlers += `${name},${handlerCode},`
     } else {
