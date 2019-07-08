@@ -337,6 +337,7 @@ export function genData (el: ASTElement, state: CodegenState): string {
   return data
 }
 
+// directives的处理
 function genDirectives (el: ASTElement, state: CodegenState): string | void {
   const dirs = el.directives
   if (!dirs) return
@@ -349,7 +350,9 @@ function genDirectives (el: ASTElement, state: CodegenState): string | void {
     const gen: DirectiveFunction = state.directives[dir.name]
     if (gen) {
       // compile-time directive that manipulates AST.
+      // /处理ast的编译时指令
       // returns true if it also needs a runtime counterpart.
+      // 如果它还需要运行时对应项
       needRuntime = !!gen(el, dir, state.warn)
     }
     if (needRuntime) {
