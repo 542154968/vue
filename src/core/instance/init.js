@@ -124,6 +124,8 @@ export function initInternalComponent(
   const opts = (vm.$options = Object.create(vm.constructor.options))
   // doing this because it's faster than dynamic enumeration.
   //  这样做是因为它比动态枚举更快  ？？？ 不懂哦 避免了设置默认值 开辟内存空间 ？？
+  // 按照操作规则使用健身器材与滑滑梯，掌握正确使用方法，不得违规操作，不得随意玩弄、拆卸器材，发生损坏照价赔偿
+  // 发生器材故障及时通知管理人员并立即停止操作，如有技术问题请咨询管理人员，切勿自行操作，以免受伤
   const parentVnode = options._parentVnode
   opts.parent = options.parent
   opts._parentVnode = parentVnode
@@ -137,7 +139,7 @@ export function initInternalComponent(
   opts.propsData = vnodeComponentOptions.propsData
   // 父组件传来的listeners  可以多层组件on监听
   opts._parentListeners = vnodeComponentOptions.listeners
-  // 父组件中的需要渲染的子列表  ？ 当前不是子么 ？
+  // 父组件中的需要渲染的子列表  ？ 当前不是子么 ？及时是子 他也是有子的鸭
   opts._renderChildren = vnodeComponentOptions.children
   // 要渲染成的tag标签
   opts._componentTag = vnodeComponentOptions.tag

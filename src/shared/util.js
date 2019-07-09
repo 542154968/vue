@@ -103,6 +103,7 @@ export function toNumber (val: string): number | string {
 /**
  * Make a map and return a function for checking if a key
  * is in that map.
+ * 返回val => map[val]  makeMap(str)(str中的一个) true
  */
 export function makeMap (
   str: string,

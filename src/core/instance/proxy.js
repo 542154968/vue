@@ -34,12 +34,14 @@ if (process.env.NODE_ENV !== 'production') {
     )
   }
   // 判断浏览器是否支持proxy
+  // isnative 在 util/env.js 判断是不是浏览器原生的
   const hasProxy = typeof Proxy !== 'undefined' && isNative(Proxy)
 
   if (hasProxy) {
     // 创建一个模拟的map对象？makeMap 利用Object.create(null) 这个返回出来的对象没有__proto__ 非常纯净
     // 然后接下来就是设置这些值的时候 拦截下来 判断这些值是否是makeMap中允许的，如果是允许的 在获取这些值就返回 不允许的就报错
     // 这个就是用来检测 @click.stop 这些标识符的把
+    // 给 修饰符做代理
     const isBuiltInModifier = makeMap(
       'stop,prevent,self,ctrl,shift,alt,meta,exact'
     )
@@ -88,6 +90,7 @@ if (process.env.NODE_ENV !== 'production') {
     }
   }
 
+  // 给修饰符和全局对象加proxy
   initProxy = function initProxy(vm) {
     if (hasProxy) {
       // determine which proxy handler to use
