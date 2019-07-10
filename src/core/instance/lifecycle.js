@@ -120,11 +120,14 @@ export function lifecycleMixin(Vue: Class<Component>) {
     }
   }
 
+  // $destroy的实现
   Vue.prototype.$destroy = function() {
     const vm: Component = this
+    // 如果已经在摧毁边缘 return
     if (vm._isBeingDestroyed) {
       return
     }
+    // 触发beforeDestory的生命周期
     callHook(vm, 'beforeDestroy')
     vm._isBeingDestroyed = true
     // remove self from parent
@@ -133,31 +136,42 @@ export function lifecycleMixin(Vue: Class<Component>) {
       remove(parent.$children, vm)
     }
     // teardown watchers
+    // 如果watcher存在 拆卸掉
     if (vm._watcher) {
       vm._watcher.teardown()
     }
+    // 如果watcher是个数组 拆解掉所有的
     let i = vm._watchers.length
     while (i--) {
       vm._watchers[i].teardown()
     }
     // remove reference from data ob
+    // /从数据ob中移除引用
     // frozen object may not have observer.
+    // 冻结对象可能没有观察者。 
+    // 总组件数量减一
     if (vm._data.__ob__) {
       vm._data.__ob__.vmCount--
     }
     // call the last hook...
+    // 最后一个周期
     vm._isDestroyed = true
     // invoke destroy hooks on current rendered tree
+    // 在当前呈现的树上调用销毁钩子
     vm.__patch__(vm._vnode, null)
     // fire destroyed hook
+    // 触发 destroy周期
     callHook(vm, 'destroyed')
     // turn off all instance listeners.
+    // 解除所有绑定的事件
     vm.$off()
     // remove __vue__ reference
+    // 暂不知为啥这样 猜测和下面的功能一样 
     if (vm.$el) {
       vm.$el.__vue__ = null
     }
     // release circular reference (#6759)
+    // 释放循环引用 避免内存泄露
     if (vm.$vnode) {
       vm.$vnode.parent = null
     }
