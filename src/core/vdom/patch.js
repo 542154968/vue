@@ -1,13 +1,18 @@
 /**
  * Virtual DOM patching algorithm based on Snabbdom by
+ * 基于snabdom的虚拟dom修补算法
  * Simon Friis Vindum (@paldepind)
+ * 西蒙·弗里斯·文杜姆
  * Licensed under the MIT License
+ * 获得麻省理工学院许可证
  * https://github.com/paldepind/snabbdom/blob/master/LICENSE
  *
  * modified by Evan You (@yyx990803)
  *
  * Not type-checking this because this file is perf-critical and the cost
+ * 不进行类型检查，因为此文件是性能关键的，并且
  * of making flow understand it is not worth it.
+ * 让流程明白这是不值得的
  */
 
 import VNode, { cloneVNode } from './vnode'
