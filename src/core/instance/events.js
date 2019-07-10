@@ -18,6 +18,7 @@ export function initEvents (vm: Component) {
   // 初始化父级附加事件
   // $listeners 
   const listeners = vm.$options._parentListeners
+  // 如果有$listeners 更新listeners
   if (listeners) {
     updateComponentListeners(vm, listeners)
   }

@@ -112,6 +112,7 @@ export function lifecycleMixin(Vue: Class<Component>) {
     // updated in a parent's updated hook.
   }
 
+  // $forceUpdate 的实现 调用组件的watcher对象 的update
   Vue.prototype.$forceUpdate = function() {
     const vm: Component = this
     if (vm._watcher) {

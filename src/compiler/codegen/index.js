@@ -265,6 +265,8 @@ export function genData (el: ASTElement, state: CodegenState): string {
   if (el.ref) {
     data += `ref:${el.ref},`
   }
+  // 如果你在渲染函数中给多个元素都应用了相同的 ref 名，
+  // 那么 `$refs.myRef` 会变成一个数组。
   if (el.refInFor) {
     data += `refInFor:true,`
   }
