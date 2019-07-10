@@ -39,6 +39,7 @@ export function initMixin(Vue: Class<Component>) {
     vm._isVue = true
 
     // merge options 如果传进来的是组件
+    // 合并options的
     if (options && options._isComponent) {
       // optimize internal component instantiation
       //优化内部组件实例化
@@ -124,8 +125,6 @@ export function initInternalComponent(
   const opts = (vm.$options = Object.create(vm.constructor.options))
   // doing this because it's faster than dynamic enumeration.
   //  这样做是因为它比动态枚举更快  ？？？ 不懂哦 避免了设置默认值 开辟内存空间 ？？
-  // 按照操作规则使用健身器材与滑滑梯，掌握正确使用方法，不得违规操作，不得随意玩弄、拆卸器材，发生损坏照价赔偿
-  // 发生器材故障及时通知管理人员并立即停止操作，如有技术问题请咨询管理人员，切勿自行操作，以免受伤
   const parentVnode = options._parentVnode
   opts.parent = options.parent
   opts._parentVnode = parentVnode

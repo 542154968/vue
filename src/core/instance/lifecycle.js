@@ -43,6 +43,8 @@ export function initLifecycle(vm: Component) {
   // 如果parent存在 并且parent不是抽象组件就遍历 知道找到是抽象组件的parent
   // 然后让该生命周期下的vue实例的parent为抽象组件
   // 抽象组件的children列表包含当前vue实例
+
+  // 抽象组件就找非抽象的作为父 并把当前的加入到父的children列表中
   if (parent && !options.abstract) {
     while (parent.$options.abstract && parent.$parent) {
       parent = parent.$parent
